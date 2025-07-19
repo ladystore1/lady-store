@@ -209,6 +209,12 @@
             margin-bottom: 16.5px;
             font-weight: 600;
             color: var(--primary-text);
+            cursor: pointer;
+            display: inline-block;
+        }
+        
+        .category-title:hover {
+            color: var(--accent-color);
         }
         
         /* Products */
@@ -643,6 +649,7 @@
             transform: translateY(-2.2px) scale(1.02);
         }
         
+        /* Overlay */
         .overlay {
             position: fixed;
             top: 0;
@@ -1379,6 +1386,36 @@
             cursor: pointer;
             font-size: 0.8rem;
         }
+
+        /* Category Buttons */
+        .category-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+            justify-content: center;
+        }
+
+        .category-btn {
+            padding: 8px 15px;
+            background-color: var(--card-bg);
+            color: var(--primary-text);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .category-btn:hover {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .category-btn.active {
+            background-color: var(--accent-color);
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -1402,29 +1439,16 @@
             <!-- Featured Products -->
             <section class="categories-section" id="products">
                 <h2 class="section-heading">Latest Collections</h2>
+                <div class="category-buttons" id="categoryButtons">
+                    <!-- Category buttons will be added dynamically -->
+                </div>
                 <div class="products-container" id="featuredProducts">
                     <!-- Featured products will be added dynamically -->
                 </div>
             </section>
             
-            <!-- Categories Sections -->
-            <section class="categories-section">
-                <div class="category-title">
-                   
-                </div>
-                <div class="products-container" id="eveningDresses">
-                    <!-- Evening dresses will be added dynamically -->
-                </div>
-            </section>
-            
-            <section class="categories-section">
-                <div class="category-title">
-                    
-                </div>
-                <div class="products-container" id="casualDresses">
-                    <!-- Casual dresses will be added dynamically -->
-                </div>
-            </section>
+            <!-- Categories Sections will be added dynamically -->
+            <div id="categoriesContainer"></div>
         </div>
         
         <!-- Product Page View (hidden by default) -->
@@ -1559,32 +1583,32 @@
                     <select id="customerGovernorate" required>
                         <option value="">Select Governorate</option>
                         <option value="Cairo">Cairo</option>
-<option value="Giza">Giza</option>
-<option value="Alexandria">Alexandria</option>
-<option value="Dakahlia">Dakahlia</option>
-<option value="Red Sea">Red Sea</option>
-<option value="Beheira">Beheira</option>
-<option value="Fayoum">Fayoum</option>
-<option value="Gharbia">Gharbia</option>
-<option value="Ismailia">Ismailia</option>
-<option value="Menofia">Menofia</option>
-<option value="Minya">Minya</option>
-<option value="Qaliubia">Qaliubia</option>
-<option value="New Valley">New Valley</option>
-<option value="Suez">Suez</option>
-<option value="Aswan">Aswan</option>
-<option value="Assiut">Assiut</option>
-<option value="Beni Suef">Beni Suef</option>
-<option value="Port Said">Port Said</option>
-<option value="Damietta">Damietta</option>
-<option value="Sharkia">Sharkia</option>
-<option value="South Sinai">South Sinai</option>
-<option value="Kafr Al sheikh">Kafr Al sheikh</option>
-<option value="Matrouh">Matrouh</option>
-<option value="Luxor">Luxor</option>
-<option value="Qena">Qena</option>
-<option value="North Sinai">North Sinai</option>
-<option value="Sohag">Sohag</option>
+                        <option value="Giza">Giza</option>
+                        <option value="Alexandria">Alexandria</option>
+                        <option value="Dakahlia">Dakahlia</option>
+                        <option value="Red Sea">Red Sea</option>
+                        <option value="Beheira">Beheira</option>
+                        <option value="Fayoum">Fayoum</option>
+                        <option value="Gharbia">Gharbia</option>
+                        <option value="Ismailia">Ismailia</option>
+                        <option value="Menofia">Menofia</option>
+                        <option value="Minya">Minya</option>
+                        <option value="Qaliubia">Qaliubia</option>
+                        <option value="New Valley">New Valley</option>
+                        <option value="Suez">Suez</option>
+                        <option value="Aswan">Aswan</option>
+                        <option value="Assiut">Assiut</option>
+                        <option value="Beni Suef">Beni Suef</option>
+                        <option value="Port Said">Port Said</option>
+                        <option value="Damietta">Damietta</option>
+                        <option value="Sharkia">Sharkia</option>
+                        <option value="South Sinai">South Sinai</option>
+                        <option value="Kafr Al sheikh">Kafr Al sheikh</option>
+                        <option value="Matrouh">Matrouh</option>
+                        <option value="Luxor">Luxor</option>
+                        <option value="Qena">Qena</option>
+                        <option value="North Sinai">North Sinai</option>
+                        <option value="Sohag">Sohag</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -1646,22 +1670,14 @@
         const database = firebase.database();
 
         // Products Data (will be loaded from Firebase)
-        let products = {
-            featured: [],
-            eveningDresses: [],
-            casualDresses: []
-        };
-
-        // Orders Data
+        let products = {};
+        let categories = ['featured']; // Default category
         let orders = [];
-
-        // Current user's orders
         let userOrders = [];
-
+        
         // Cart Variables
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
         let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
-        let discountApplied = false;
         const cartCount = document.getElementById('cartCount');
         const floatingCartCount = document.getElementById('floatingCartCount');
         const floatingCart = document.getElementById('floatingCart');
@@ -1682,8 +1698,7 @@
         const customNotification = document.getElementById('customNotification');
         const notificationMessage = document.getElementById('notificationMessage');
         const featuredProducts = document.getElementById('featuredProducts');
-        const eveningDresses = document.getElementById('eveningDresses');
-        const casualDresses = document.getElementById('casualDresses');
+        const categoriesContainer = document.getElementById('categoriesContainer');
         const mainShopView = document.getElementById('mainShopView');
         const productPageView = document.getElementById('productPageView');
         const productGallery = document.getElementById('productGallery');
@@ -1693,16 +1708,21 @@
         const savedDataPreview = document.getElementById('savedDataPreview');
         const customerForm = document.getElementById('customerForm');
         const mainHeader = document.getElementById('mainHeader');
+        const categoryButtons = document.getElementById('categoryButtons');
 
         // Initialize Store
         function initStore() {
             // Check if we're viewing a product page
             const urlParams = new URLSearchParams(window.location.search);
             const productId = urlParams.get('id');
+            const category = urlParams.get('category');
             
             if (productId) {
                 showProductPage(productId);
+            } else if (category) {
+                showCategoryProducts(category);
             } else {
+                loadCategoriesFromFirebase();
                 loadProductsFromFirebase();
             }
             
@@ -1714,22 +1734,70 @@
             setupHeaderScrollEffect();
         }
 
+        // Load categories from Firebase
+        function loadCategoriesFromFirebase() {
+            database.ref('categories').on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data && Array.isArray(data)) {
+                    categories = ['featured', ...data]; // Always keep 'featured' as first category
+                    renderCategories();
+                    renderCategoryButtons();
+                } else {
+                    // Initialize with default categories if none exist
+                    database.ref('categories').set([]);
+                }
+            });
+        }
+
+        // Render category buttons
+        function renderCategoryButtons() {
+            categoryButtons.innerHTML = '';
+            
+            // Add "All" button
+            const allButton = document.createElement('button');
+            allButton.className = 'category-btn active';
+            allButton.textContent = 'All';
+            allButton.onclick = () => {
+                document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+                allButton.classList.add('active');
+                showAllProducts();
+            };
+            categoryButtons.appendChild(allButton);
+            
+            // Add category buttons (skip 'featured')
+            categories.slice(1).forEach(category => {
+                const button = document.createElement('button');
+                button.className = 'category-btn';
+                button.textContent = category.replace(/-/g, ' ');
+                button.onclick = () => {
+                    document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    showCategoryProducts(category);
+                };
+                categoryButtons.appendChild(button);
+            });
+        }
+
         // Load products from Firebase
         function loadProductsFromFirebase() {
             database.ref('products').on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
-                    products.featured = data.featured || [];
-                    products.eveningDresses = data.eveningDresses || [];
-                    products.casualDresses = data.casualDresses || [];
+                    products = data;
+                    // Sort products alphabetically within each category
+                    for (const category in products) {
+                        if (products[category]) {
+                            products[category].sort((a, b) => a.name.localeCompare(b.name));
+                        }
+                    }
                     renderProducts();
                 } else {
                     // Initialize with empty data if no products exist
-                    database.ref('products').set({
-                        featured: [],
-                        eveningDresses: [],
-                        casualDresses: []
+                    const initialProducts = {};
+                    categories.forEach(cat => {
+                        initialProducts[cat] = [];
                     });
+                    database.ref('products').set(initialProducts);
                 }
             });
         }
@@ -1739,7 +1807,8 @@
             database.ref('orders').on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
-                    orders = Object.values(data);
+                    // Convert object to array and include Firebase keys
+                    orders = Object.entries(data).map(([key, value]) => ({ ...value, firebaseKey: key }));
                     
                     // Filter orders for current user (simplified - in a real app you'd have user authentication)
                     const userPhone = localStorage.getItem('customerPhone');
@@ -1752,6 +1821,133 @@
                     database.ref('orders').set([]);
                 }
             });
+        }
+
+        // Render categories
+        function renderCategories() {
+            categoriesContainer.innerHTML = '';
+            
+            // Skip the 'featured' category as it's already shown
+            categories.slice(1).forEach(category => {
+                const categorySection = document.createElement('section');
+                categorySection.className = 'categories-section';
+                categorySection.id = `category-${category}`;
+                
+                const categoryTitle = document.createElement('h3');
+                categoryTitle.className = 'category-title';
+                categoryTitle.textContent = category.replace(/-/g, ' ');
+                categoryTitle.onclick = () => showCategoryProducts(category);
+                
+                const productsContainer = document.createElement('div');
+                productsContainer.className = 'products-container';
+                productsContainer.id = `products-${category}`;
+                
+                categorySection.appendChild(categoryTitle);
+                categorySection.appendChild(productsContainer);
+                categoriesContainer.appendChild(categorySection);
+                
+                // Render products for this category
+                if (products[category]) {
+                    renderCategoryProducts(category);
+                }
+            });
+        }
+
+        // Render products for a specific category
+        function renderCategoryProducts(category) {
+            const container = document.getElementById(`products-${category}`);
+            if (!container) return;
+            
+            container.innerHTML = products[category].map(product => `
+                <div class="product-card" data-id="${product.id}">
+                    ${product.discount ? `<span class="product-badge">${product.discount}</span>` : ''}
+                    ${product.soldOut ? `<div class="sold-out-badge">Sold Out</div>` : ''}
+                    <div class="product-image-container">
+                        <img src="${product.images[0]}" alt="${product.name}" class="product-image">
+                        <button class="wishlist-btn" data-id="${product.id}" onclick="event.stopPropagation(); toggleWishlist('${product.id}')">
+                            <i class="fas fa-heart ${wishlist.includes(product.id) ? 'active' : ''}"></i>
+                        </button>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">${product.name}</h3>
+                        <div class="product-price">
+                            ${product.oldPrice ? `<span class="old-price">${product.oldPrice} EGP</span>` : ''}
+                            <span class="current-price">${product.price} EGP</span>
+                        </div>
+                        <div class="product-sizes">${product.sizes || 'Sizes: S, M, L'}</div>
+                        <button class="add-to-cart ${product.soldOut ? 'sold-out' : ''}" data-id="${product.id}" ${product.soldOut ? 'disabled' : ''} onclick="event.stopPropagation(); addToCart('${product.id}')">
+                            ${product.soldOut ? 'Sold Out' : 'Add to Cart'}
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Add click event to product cards
+            document.querySelectorAll(`#products-${category} .product-card`).forEach(card => {
+                card.addEventListener('click', function(e) {
+                    // Don't navigate if clicking on buttons inside the card
+                    if (e.target.closest('.wishlist-btn') || e.target.closest('.add-to-cart')) {
+                        return;
+                    }
+                    const productId = this.dataset.id;
+                    showProductPage(productId);
+                });
+            });
+            
+            // Setup scroll animations for new elements
+            setupScrollAnimation();
+        }
+
+        // Show all products from all categories
+        function showAllProducts() {
+            // Update URL without reloading the page
+            window.history.pushState({}, '', window.location.pathname);
+            
+            // Hide product page if open
+            productPageView.style.display = 'none';
+            
+            // Show main shop view
+            mainShopView.style.display = 'block';
+            
+            // Show all categories
+            document.querySelectorAll('.categories-section').forEach(section => {
+                section.style.display = 'block';
+            });
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+            
+            // Update active button
+            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.category-btn')[0].classList.add('active');
+        }
+
+        // Show products from a specific category
+        function showCategoryProducts(category) {
+            // Update URL without reloading the page
+            window.history.pushState({}, '', `?category=${category}`);
+            
+            // Hide product page if open
+            productPageView.style.display = 'none';
+            
+            // Show main shop view
+            mainShopView.style.display = 'block';
+            
+            // Hide all categories except the selected one
+            document.querySelectorAll('.categories-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Show the selected category
+            const categoryElement = document.getElementById(`category-${category}`);
+            if (categoryElement) {
+                categoryElement.style.display = 'block';
+                categoryElement.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                // If it's the featured category (which doesn't have its own section)
+                document.getElementById('products').style.display = 'block';
+                document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
+            }
         }
 
         // Show product page
@@ -2025,79 +2221,38 @@
         // Render Products
         function renderProducts() {
             // Render featured products
-            featuredProducts.innerHTML = products.featured.map(product => `
-                <div class="product-card" data-id="${product.id}">
-                    ${product.discount ? `<span class="product-badge">${product.discount}</span>` : ''}
-                    ${product.soldOut ? `<div class="sold-out-badge">Sold Out</div>` : ''}
-                    <div class="product-image-container">
-                        <img src="${product.images[0]}" alt="${product.name}" class="product-image">
-                        <button class="wishlist-btn" data-id="${product.id}" onclick="event.stopPropagation(); toggleWishlist('${product.id}')">
-                            <i class="fas fa-heart ${wishlist.includes(product.id) ? 'active' : ''}"></i>
-                        </button>
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-title">${product.name}</h3>
-                        <div class="product-price">
-                            ${product.oldPrice ? `<span class="old-price">${product.oldPrice} EGP</span>` : ''}
-                            <span class="current-price">${product.price} EGP</span>
+            if (products.featured) {
+                featuredProducts.innerHTML = products.featured.map(product => `
+                    <div class="product-card" data-id="${product.id}">
+                        ${product.discount ? `<span class="product-badge">${product.discount}</span>` : ''}
+                        ${product.soldOut ? `<div class="sold-out-badge">Sold Out</div>` : ''}
+                        <div class="product-image-container">
+                            <img src="${product.images[0]}" alt="${product.name}" class="product-image">
+                            <button class="wishlist-btn" data-id="${product.id}" onclick="event.stopPropagation(); toggleWishlist('${product.id}')">
+                                <i class="fas fa-heart ${wishlist.includes(product.id) ? 'active' : ''}"></i>
+                            </button>
                         </div>
-                        <div class="product-sizes">${product.sizes || 'Sizes: S, M, L'}</div>
-                        <button class="add-to-cart ${product.soldOut ? 'sold-out' : ''}" data-id="${product.id}" ${product.soldOut ? 'disabled' : ''} onclick="event.stopPropagation(); addToCart('${product.id}')">
-                            ${product.soldOut ? 'Sold Out' : 'Add to Cart'}
-                        </button>
+                        <div class="product-info">
+                            <h3 class="product-title">${product.name}</h3>
+                            <div class="product-price">
+                                ${product.oldPrice ? `<span class="old-price">${product.oldPrice} EGP</span>` : ''}
+                                <span class="current-price">${product.price} EGP</span>
+                            </div>
+                            <div class="product-sizes">${product.sizes || 'Sizes: S, M, L'}</div>
+                            <button class="add-to-cart ${product.soldOut ? 'sold-out' : ''}" data-id="${product.id}" ${product.soldOut ? 'disabled' : ''} onclick="event.stopPropagation(); addToCart('${product.id}')">
+                                ${product.soldOut ? 'Sold Out' : 'Add to Cart'}
+                            </button>
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                `).join('');
+            }
             
-            // Render evening dresses
-            eveningDresses.innerHTML = products.eveningDresses.map(product => `
-                <div class="product-card" data-id="${product.id}">
-                    ${product.discount ? `<span class="product-badge">${product.discount}</span>` : ''}
-                    ${product.soldOut ? `<div class="sold-out-badge">Sold Out</div>` : ''}
-                    <div class="product-image-container">
-                        <img src="${product.images[0]}" alt="${product.name}" class="product-image">
-                        <button class="wishlist-btn" data-id="${product.id}" onclick="event.stopPropagation(); toggleWishlist('${product.id}')">
-                            <i class="fas fa-heart ${wishlist.includes(product.id) ? 'active' : ''}"></i>
-                        </button>
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-title">${product.name}</h3>
-                        <div class="product-price">
-                            ${product.oldPrice ? `<span class="old-price">${product.oldPrice} EGP</span>` : ''}
-                            <span class="current-price">${product.price} EGP</span>
-                        </div>
-                        <div class="product-sizes">${product.sizes || 'Sizes: S, M, L'}</div>
-                        <button class="add-to-cart ${product.soldOut ? 'sold-out' : ''}" data-id="${product.id}" ${product.soldOut ? 'disabled' : ''} onclick="event.stopPropagation(); addToCart('${product.id}')">
-                            ${product.soldOut ? 'Sold Out' : 'Add to Cart'}
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-            
-            // Render casual dresses
-            casualDresses.innerHTML = products.casualDresses.map(product => `
-                <div class="product-card" data-id="${product.id}">
-                    ${product.discount ? `<span class="product-badge">${product.discount}</span>` : ''}
-                    ${product.soldOut ? `<div class="sold-out-badge">Sold Out</div>` : ''}
-                    <div class="product-image-container">
-                        <img src="${product.images[0]}" alt="${product.name}" class="product-image">
-                        <button class="wishlist-btn" data-id="${product.id}" onclick="event.stopPropagation(); toggleWishlist('${product.id}')">
-                            <i class="fas fa-heart ${wishlist.includes(product.id) ? 'active' : ''}"></i>
-                        </button>
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-title">${product.name}</h3>
-                        <div class="product-price">
-                            ${product.oldPrice ? `<span class="old-price">${product.oldPrice} EGP</span>` : ''}
-                            <span class="current-price">${product.price} EGP</span>
-                        </div>
-                        <div class="product-sizes">${product.sizes || 'Sizes: S, M, L'}</div>
-                        <button class="add-to-cart ${product.soldOut ? 'sold-out' : ''}" data-id="${product.id}" ${product.soldOut ? 'disabled' : ''} onclick="event.stopPropagation(); addToCart('${product.id}')">
-                            ${product.soldOut ? 'Sold Out' : 'Add to Cart'}
-                        </button>
-                    </div>
-                </div>
-            `).join('');
+            // Render products for other categories
+            categories.slice(1).forEach(category => {
+                if (products[category]) {
+                    renderCategoryProducts(category);
+                }
+            });
             
             // Add click event to product cards
             document.querySelectorAll('.product-card').forEach(card => {
@@ -2194,9 +2349,12 @@
             window.addEventListener('popstate', function() {
                 const urlParams = new URLSearchParams(window.location.search);
                 const productId = urlParams.get('id');
+                const category = urlParams.get('category');
                 
                 if (productId) {
                     showProductPage(productId);
+                } else if (category) {
+                    showCategoryProducts(category);
                 } else {
                     mainShopView.style.display = 'block';
                     productPageView.style.display = 'none';
@@ -2373,12 +2531,7 @@
             floatingCartCount.textContent = totalItems;
             
             // Update total
-            let totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            
-            if (discountApplied) {
-                totalPrice = totalPrice * 0.95; // Apply 5% discount
-            }
-            
+            const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
             cartTotalPrice.textContent = totalPrice.toLocaleString() + ' EGP';
             
             // Render items
@@ -2486,10 +2639,7 @@
             const customerNotes = localStorage.getItem('customerNotes') || '';
             
             // Calculate total
-            let totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            if (discountApplied) {
-                totalPrice = totalPrice * 0.95;
-            }
+            const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
             
             // Create order object
             const order = {
