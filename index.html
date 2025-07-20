@@ -1416,6 +1416,31 @@
             background-color: var(--accent-color);
             color: white;
         }
+
+        /* Back to Collections Button */
+        .back-to-collections {
+            display: inline-block;
+            margin: 20px 0;
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .back-to-collections:hover {
+            text-decoration: underline;
+            transform: translateX(-5px);
+        }
+
+        /* Collection View */
+        .collection-view {
+            display: none;
+        }
+
+        .collection-view.active {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -1436,8 +1461,15 @@
     <div id="content">
         <!-- Main Shop View (default) -->
         <div class="container" id="mainShopView">
+            <!-- Back to Collections Button (hidden by default) -->
+            <div id="backToCollectionsContainer" style="display: none; margin-top: 20px; margin-bottom: 30px;">
+                <a class="back-to-collections" onclick="showAllCollections()">
+                    <i class="fas fa-arrow-left"></i> Back to Collections
+                </a>
+            </div>
+            
             <!-- Featured Products -->
-            <section class="categories-section" id="products">
+            <section class="categories-section" id="featuredProductsSection">
                 <h2 class="section-heading">Latest Collections</h2>
                 <div class="category-buttons" id="categoryButtons">
                     <!-- Category buttons will be added dynamically -->
@@ -1449,6 +1481,12 @@
             
             <!-- Categories Sections will be added dynamically -->
             <div id="categoriesContainer"></div>
+            
+            <!-- Collection View (hidden by default) -->
+            <div id="collectionView" class="collection-view">
+                <h2 class="section-heading" id="collectionTitle"></h2>
+                <div class="products-container" id="collectionProducts"></div>
+            </div>
         </div>
         
         <!-- Product Page View (hidden by default) -->
@@ -1674,6 +1712,11 @@
         let categories = ['featured']; // Default category
         let orders = [];
         let userOrders = [];
+        let currentCollection = null;
+        
+        // Track selected color and size for current product
+        let selectedColor = 'Default';
+        let selectedSize = 'Default';
         
         // Cart Variables
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -1709,6 +1752,11 @@
         const customerForm = document.getElementById('customerForm');
         const mainHeader = document.getElementById('mainHeader');
         const categoryButtons = document.getElementById('categoryButtons');
+        const backToCollectionsContainer = document.getElementById('backToCollectionsContainer');
+        const collectionView = document.getElementById('collectionView');
+        const collectionTitle = document.getElementById('collectionTitle');
+        const collectionProducts = document.getElementById('collectionProducts');
+        const featuredProductsSection = document.getElementById('featuredProductsSection');
 
         // Initialize Store
         function initStore() {
@@ -1720,7 +1768,7 @@
             if (productId) {
                 showProductPage(productId);
             } else if (category) {
-                showCategoryProducts(category);
+                showCollection(category);
             } else {
                 loadCategoriesFromFirebase();
                 loadProductsFromFirebase();
@@ -1760,7 +1808,7 @@
             allButton.onclick = () => {
                 document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
                 allButton.classList.add('active');
-                showAllProducts();
+                showAllCollections();
             };
             categoryButtons.appendChild(allButton);
             
@@ -1772,7 +1820,7 @@
                 button.onclick = () => {
                     document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
                     button.classList.add('active');
-                    showCategoryProducts(category);
+                    showCollection(category);
                 };
                 categoryButtons.appendChild(button);
             });
@@ -1836,7 +1884,7 @@
                 const categoryTitle = document.createElement('h3');
                 categoryTitle.className = 'category-title';
                 categoryTitle.textContent = category.replace(/-/g, ' ');
-                categoryTitle.onclick = () => showCategoryProducts(category);
+                categoryTitle.onclick = () => showCollection(category);
                 
                 const productsContainer = document.createElement('div');
                 productsContainer.className = 'products-container';
@@ -1898,8 +1946,8 @@
             setupScrollAnimation();
         }
 
-        // Show all products from all categories
-        function showAllProducts() {
+        // Show all collections (default view)
+        function showAllCollections() {
             // Update URL without reloading the page
             window.history.pushState({}, '', window.location.pathname);
             
@@ -1909,10 +1957,17 @@
             // Show main shop view
             mainShopView.style.display = 'block';
             
-            // Show all categories
+            // Hide back to collections button
+            backToCollectionsContainer.style.display = 'none';
+            
+            // Show all categories and featured section
+            featuredProductsSection.style.display = 'block';
             document.querySelectorAll('.categories-section').forEach(section => {
                 section.style.display = 'block';
             });
+            
+            // Hide collection view
+            collectionView.classList.remove('active');
             
             // Scroll to top
             window.scrollTo(0, 0);
@@ -1922,8 +1977,8 @@
             document.querySelectorAll('.category-btn')[0].classList.add('active');
         }
 
-        // Show products from a specific category
-        function showCategoryProducts(category) {
+        // Show a specific collection
+        function showCollection(category) {
             // Update URL without reloading the page
             window.history.pushState({}, '', `?category=${category}`);
             
@@ -1933,21 +1988,67 @@
             // Show main shop view
             mainShopView.style.display = 'block';
             
-            // Hide all categories except the selected one
+            // Show back to collections button
+            backToCollectionsContainer.style.display = 'block';
+            
+            // Hide all categories and featured section
+            featuredProductsSection.style.display = 'none';
             document.querySelectorAll('.categories-section').forEach(section => {
                 section.style.display = 'none';
             });
             
-            // Show the selected category
-            const categoryElement = document.getElementById(`category-${category}`);
-            if (categoryElement) {
-                categoryElement.style.display = 'block';
-                categoryElement.scrollIntoView({ behavior: 'smooth' });
-            } else {
-                // If it's the featured category (which doesn't have its own section)
-                document.getElementById('products').style.display = 'block';
-                document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
-            }
+            // Show the collection view
+            currentCollection = category;
+            collectionTitle.textContent = category.replace(/-/g, ' ');
+            renderCollectionProducts(category);
+            collectionView.classList.add('active');
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // Render products for the collection view
+        function renderCollectionProducts(category) {
+            if (!products[category]) return;
+            
+            collectionProducts.innerHTML = products[category].map(product => `
+                <div class="product-card" data-id="${product.id}">
+                    ${product.discount ? `<span class="product-badge">${product.discount}</span>` : ''}
+                    ${product.soldOut ? `<div class="sold-out-badge">Sold Out</div>` : ''}
+                    <div class="product-image-container">
+                        <img src="${product.images[0]}" alt="${product.name}" class="product-image">
+                        <button class="wishlist-btn" data-id="${product.id}" onclick="event.stopPropagation(); toggleWishlist('${product.id}')">
+                            <i class="fas fa-heart ${wishlist.includes(product.id) ? 'active' : ''}"></i>
+                        </button>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">${product.name}</h3>
+                        <div class="product-price">
+                            ${product.oldPrice ? `<span class="old-price">${product.oldPrice} EGP</span>` : ''}
+                            <span class="current-price">${product.price} EGP</span>
+                        </div>
+                        <div class="product-sizes">${product.sizes || 'Sizes: S, M, L'}</div>
+                        <button class="add-to-cart ${product.soldOut ? 'sold-out' : ''}" data-id="${product.id}" ${product.soldOut ? 'disabled' : ''} onclick="event.stopPropagation(); addToCart('${product.id}')">
+                            ${product.soldOut ? 'Sold Out' : 'Add to Cart'}
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Add click event to product cards
+            document.querySelectorAll('#collectionProducts .product-card').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    // Don't navigate if clicking on buttons inside the card
+                    if (e.target.closest('.wishlist-btn') || e.target.closest('.add-to-cart')) {
+                        return;
+                    }
+                    const productId = this.dataset.id;
+                    showProductPage(productId);
+                });
+            });
+            
+            // Setup scroll animations for new elements
+            setupScrollAnimation();
         }
 
         // Show product page
@@ -1969,6 +2070,10 @@
                 window.location.href = 'index.html';
                 return;
             }
+            
+            // Reset selected color and size
+            selectedColor = 'Default';
+            selectedSize = 'Default';
             
             // Hide main shop view and show product page
             mainShopView.style.display = 'none';
@@ -2019,10 +2124,10 @@
                 
                 <div class="product-actions">
                     <button class="add-to-cart ${product.soldOut ? 'sold-out' : ''}" 
-                            onclick="addToCart('${product.id}')" ${product.soldOut ? 'disabled' : ''}>
+                            onclick="addToCart('${product.id}', selectedColor, selectedSize)" ${product.soldOut ? 'disabled' : ''}>
                         ${product.soldOut ? 'Sold Out' : 'Add to Cart'}
                     </button>
-                    <button class="buy-now-btn" onclick="addToCart('${product.id}'); openCart();">
+                    <button class="buy-now-btn" onclick="addToCart('${product.id}', selectedColor, selectedSize); openCart();">
                         Buy Now
                     </button>
                 </div>
@@ -2050,6 +2155,7 @@
 
         // Select color option
         function selectColor(color) {
+            selectedColor = color;
             document.querySelectorAll('.color-option').forEach(option => {
                 option.classList.remove('selected');
             });
@@ -2058,6 +2164,7 @@
 
         // Select size option
         function selectSize(size) {
+            selectedSize = size;
             document.querySelectorAll('.size-option').forEach(option => {
                 option.classList.remove('selected');
             });
@@ -2354,10 +2461,9 @@
                 if (productId) {
                     showProductPage(productId);
                 } else if (category) {
-                    showCategoryProducts(category);
+                    showCollection(category);
                 } else {
-                    mainShopView.style.display = 'block';
-                    productPageView.style.display = 'none';
+                    showAllCollections();
                 }
             });
             
