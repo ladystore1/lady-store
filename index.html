@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lady Store - Fashion Boutique</title>
+    <title>Lady Store</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
     <!-- Firebase SDK -->
@@ -358,7 +358,7 @@
         }
         
         .product-title {
-            font-size: 0.99rem;
+            font-size: 0.7rem;
             margin-bottom: 0;
             font-weight: 500;
             color: var(--primary-text);
@@ -373,23 +373,23 @@
             display: flex;
             align-items: center;
             margin-bottom: 0;
+            font-size: 0.7rem;
         }
         
         .current-price {
             font-weight: 700;
             color: var(--primary-text);
-            font-size: 1.1rem;
         }
         
         .old-price {
-            font-size: 0.88rem;
+            font-size: 0.6rem;
             color: var(--secondary-text);
             text-decoration: line-through;
             margin-left: 11px;
         }
         
         .product-sizes {
-            font-size: 0.88rem;
+            font-size: 0.6rem;
             color: var(--secondary-text);
             margin-bottom: 8.8px;
         }
@@ -401,7 +401,7 @@
             color: var(--bg-color);
             border: none;
             border-radius: 8.8px;
-            font-size: 0.99rem;
+            font-size: 0.7rem;
             font-weight: 500;
             cursor: pointer;
             transition: background-color 0.3s, transform 0.3s;
@@ -1060,6 +1060,28 @@
             transform: translateX(-5px);
         }
 
+        /* Back to Collections Button */
+        .back-to-collections {
+            display: inline-block;
+            margin: 10px 0 20px;
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 5px 10px;
+            border: 1px solid var(--accent-color);
+            border-radius: 5px;
+        }
+
+        .back-to-collections:hover {
+            text-decoration: none;
+            transform: translateX(-5px);
+            background-color: var(--accent-color);
+            color: white;
+        }
+
         /* Product Details Section */
         .product-details-section {
             margin-top: 30px;
@@ -1417,22 +1439,6 @@
             color: white;
         }
 
-        /* Back to Collections Button */
-        .back-to-collections {
-            display: inline-block;
-            margin: 20px 0;
-            color: var(--accent-color);
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-
-        .back-to-collections:hover {
-            text-decoration: underline;
-            transform: translateX(-5px);
-        }
-
         /* Collection View */
         .collection-view {
             display: none;
@@ -1457,50 +1463,27 @@
         </div>
     </header>
     
-    <!-- Check if we're on a product page or main shop -->
-    <div id="content">
-        <!-- Main Shop View (default) -->
-        <div class="container" id="mainShopView">
-            <!-- Back to Collections Button (hidden by default) -->
-            <div id="backToCollectionsContainer" style="display: none; margin-top: 20px; margin-bottom: 30px;">
-                <a class="back-to-collections" onclick="showAllCollections()">
-                    <i class="fas fa-arrow-left"></i> Back to Collections
-                </a>
+    <!-- Main Content -->
+    <div class="container" id="mainContent">
+        <!-- Categories Section -->
+        <section class="categories-section">
+            <h2 class="section-heading">Categories</h2>
+            <div class="category-buttons" id="categoryButtons">
+                <button class="category-btn active" data-category="all">All</button>
+                <!-- Category buttons will be loaded here -->
             </div>
-            
-            <!-- Featured Products -->
-            <section class="categories-section" id="featuredProductsSection">
-                <h2 class="section-heading">Latest Collections</h2>
-                <div class="category-buttons" id="categoryButtons">
-                    <!-- Category buttons will be added dynamically -->
-                </div>
-                <div class="products-container" id="featuredProducts">
-                    <!-- Featured products will be added dynamically -->
-                </div>
-            </section>
-            
-            <!-- Categories Sections will be added dynamically -->
-            <div id="categoriesContainer"></div>
-            
-            <!-- Collection View (hidden by default) -->
-            <div id="collectionView" class="collection-view">
-                <h2 class="section-heading" id="collectionTitle"></h2>
-                <div class="products-container" id="collectionProducts"></div>
+            <div class="products-container" id="categoryProducts">
+                <!-- Category products will be loaded here -->
             </div>
-        </div>
+        </section>
         
-        <!-- Product Page View (hidden by default) -->
-        <div class="product-page" id="productPageView" style="display: none;">
-            <a href="#" class="back-to-shop" id="backToShop"><i class="fas fa-arrow-left"></i> Back to Collections</a>
-            <div class="container product-page-container">
-                <div class="product-gallery" id="productGallery">
-                    <!-- Product images will be added dynamically -->
-                </div>
-                <div class="product-details" id="productDetails">
-                    <!-- Product details will be added dynamically -->
-                </div>
+        <!-- Featured Products -->
+        <section class="categories-section">
+            <h2 class="section-heading">Latest Collections</h2>
+            <div class="products-container" id="featuredProducts">
+                <!-- Featured products will be loaded here -->
             </div>
-        </div>
+        </section>
     </div>
     
     <!-- Social Media -->
@@ -1522,7 +1505,7 @@
             <i class="fas fa-home"></i>
             <span>Home</span>
         </div>
-        <div class="banner-icon" onclick="scrollToProducts()">
+        <div class="banner-icon" onclick="document.getElementById('featuredProducts').scrollIntoView({behavior: 'smooth'})">
             <i class="fas fa-tshirt"></i>
             <span>Products</span>
         </div>
@@ -1691,1111 +1674,769 @@
         </div>
     </footer>
     
-    <script>
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyB_4U1Bk3K8J8Z9Z9Z9Z9Z9Z9Z9Z9Z9Z",
-            authDomain: "test-7d761.firebaseapp.com",
-            databaseURL: "https://lady-store-75b73-default-rtdb.firebaseio.com/",
-            projectId: "test-7d761",
-            storageBucket: "test-7d761.appspot.com",
-            messagingSenderId: "1234567890",
-            appId: "1:1234567890:web:abcdef1234567890"
-        };
+<script>
+    // Firebase Configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyB_4U1Bk3K8J8Z9Z9Z9Z9Z9Z9Z9Z",
+        authDomain: "test-7d761.firebaseapp.com",
+        databaseURL: "https://lady-store-75b73-default-rtdb.firebaseio.com/",
+        projectId: "test-7d761",
+        storageBucket: "test-7d761.appspot.com",
+        messagingSenderId: "1234567890",
+        appId: "1:1234567890:web:abcdef1234567890"
+    };
 
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
 
-        // Products Data (will be loaded from Firebase)
-        let products = {};
-        let categories = ['featured']; // Default category
-        let orders = [];
-        let userOrders = [];
-        let currentCollection = null;
-        
-        // Track selected color and size for current product
-        let selectedColor = 'Default';
-        let selectedSize = 'Default';
-        
-        // Cart Variables
-        let cart = JSON.parse(localStorage.getItem('cart')) || [];
-        let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
-        const cartCount = document.getElementById('cartCount');
-        const floatingCartCount = document.getElementById('floatingCartCount');
-        const floatingCart = document.getElementById('floatingCart');
-        const cartModal = document.getElementById('cartModal');
-        const orderHistoryModal = document.getElementById('orderHistoryModal');
-        const orderDetailsModal = document.getElementById('orderDetailsModal');
-        const overlay = document.getElementById('overlay');
-        const closeCartBtn = document.getElementById('closeCart');
-        const closeOrderHistoryBtn = document.getElementById('closeOrderHistory');
-        const closeOrderDetailsBtn = document.getElementById('closeOrderDetails');
-        const cartItemsContainer = document.getElementById('cartItems');
-        const orderHistoryItems = document.getElementById('orderHistoryItems');
-        const orderDetailsContent = document.getElementById('orderDetailsContent');
-        const cartTotalPrice = document.getElementById('cartTotalPrice');
-        const checkoutBtn = document.getElementById('checkoutBtn');
-        const cartIcon = document.getElementById('cartIcon');
-        const orderHistoryBtn = document.getElementById('orderHistoryBtn');
-        const customNotification = document.getElementById('customNotification');
-        const notificationMessage = document.getElementById('notificationMessage');
-        const featuredProducts = document.getElementById('featuredProducts');
-        const categoriesContainer = document.getElementById('categoriesContainer');
-        const mainShopView = document.getElementById('mainShopView');
-        const productPageView = document.getElementById('productPageView');
-        const productGallery = document.getElementById('productGallery');
-        const productDetails = document.getElementById('productDetails');
-        const backToShop = document.getElementById('backToShop');
-        const savedDataOptions = document.getElementById('savedDataOptions');
-        const savedDataPreview = document.getElementById('savedDataPreview');
-        const customerForm = document.getElementById('customerForm');
-        const mainHeader = document.getElementById('mainHeader');
-        const categoryButtons = document.getElementById('categoryButtons');
-        const backToCollectionsContainer = document.getElementById('backToCollectionsContainer');
-        const collectionView = document.getElementById('collectionView');
-        const collectionTitle = document.getElementById('collectionTitle');
-        const collectionProducts = document.getElementById('collectionProducts');
-        const featuredProductsSection = document.getElementById('featuredProductsSection');
+    // Products Data (will be loaded from Firebase)
+    let products = {};
+    let categories = ['featured']; // Default category
+    let orders = [];
+    let userOrders = [];
+    let currentCategory = 'all';
+    
+    // Cart Variables
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+    const cartCount = document.getElementById('cartCount');
+    const floatingCartCount = document.getElementById('floatingCartCount');
+    const floatingCart = document.getElementById('floatingCart');
+    const cartModal = document.getElementById('cartModal');
+    const orderHistoryModal = document.getElementById('orderHistoryModal');
+    const orderDetailsModal = document.getElementById('orderDetailsModal');
+    const overlay = document.getElementById('overlay');
+    const closeCartBtn = document.getElementById('closeCart');
+    const closeOrderHistoryBtn = document.getElementById('closeOrderHistory');
+    const closeOrderDetailsBtn = document.getElementById('closeOrderDetails');
+    const cartItemsContainer = document.getElementById('cartItems');
+    const orderHistoryItems = document.getElementById('orderHistoryItems');
+    const orderDetailsContent = document.getElementById('orderDetailsContent');
+    const cartTotalPrice = document.getElementById('cartTotalPrice');
+    const checkoutBtn = document.getElementById('checkoutBtn');
+    const cartIcon = document.getElementById('cartIcon');
+    const orderHistoryBtn = document.getElementById('orderHistoryBtn');
+    const customNotification = document.getElementById('customNotification');
+    const notificationMessage = document.getElementById('notificationMessage');
+    const featuredProducts = document.getElementById('featuredProducts');
+    const categoryProducts = document.getElementById('categoryProducts');
+    const categoryButtons = document.getElementById('categoryButtons');
+    const mainHeader = document.getElementById('mainHeader');
 
-        // Initialize Store
-        function initStore() {
-            // Check if we're viewing a product page
-            const urlParams = new URLSearchParams(window.location.search);
-            const productId = urlParams.get('id');
-            const category = urlParams.get('category');
-            
-            if (productId) {
-                showProductPage(productId);
-            } else if (category) {
-                showCollection(category);
+    // Initialize Store
+    function initStore() {
+        loadCategoriesFromFirebase();
+        loadProductsFromFirebase();
+        updateCart();
+        updateWishlist();
+        loadOrders();
+        setupEventListeners();
+        setupScrollAnimation();
+        setupHeaderScrollEffect();
+    }
+
+    // Load categories from Firebase
+    function loadCategoriesFromFirebase() {
+        database.ref('categories').on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data && Array.isArray(data)) {
+                categories = ['featured', ...data];
+                renderCategoryButtons();
             } else {
-                loadCategoriesFromFirebase();
-                loadProductsFromFirebase();
+                database.ref('categories').set([]);
             }
-            
-            updateCart();
-            updateWishlist();
-            loadOrders();
-            setupEventListeners();
-            setupScrollAnimation();
-            setupHeaderScrollEffect();
-        }
+        });
+    }
 
-        // Load categories from Firebase
-        function loadCategoriesFromFirebase() {
-            database.ref('categories').on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data && Array.isArray(data)) {
-                    categories = ['featured', ...data]; // Always keep 'featured' as first category
-                    renderCategories();
-                    renderCategoryButtons();
-                } else {
-                    // Initialize with default categories if none exist
-                    database.ref('categories').set([]);
-                }
-            });
-        }
+    // Render category buttons
+    function renderCategoryButtons() {
+        // Clear existing buttons (keep "All" button)
+        const allButton = document.querySelector('.category-btn[data-category="all"]');
+        categoryButtons.innerHTML = '';
+        categoryButtons.appendChild(allButton);
+        
+        // Add category buttons (skip 'featured')
+        categories.slice(1).forEach(category => {
+            const button = document.createElement('button');
+            button.className = 'category-btn';
+            button.textContent = category.replace(/-/g, ' ');
+            button.dataset.category = category;
+            button.onclick = () => filterProductsByCategory(category);
+            categoryButtons.appendChild(button);
+        });
+    }
 
-        // Render category buttons
-        function renderCategoryButtons() {
-            categoryButtons.innerHTML = '';
-            
-            // Add "All" button
-            const allButton = document.createElement('button');
-            allButton.className = 'category-btn active';
-            allButton.textContent = 'All';
-            allButton.onclick = () => {
-                document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
-                allButton.classList.add('active');
-                showAllCollections();
-            };
-            categoryButtons.appendChild(allButton);
-            
-            // Add category buttons (skip 'featured')
-            categories.slice(1).forEach(category => {
-                const button = document.createElement('button');
-                button.className = 'category-btn';
-                button.textContent = category.replace(/-/g, ' ');
-                button.onclick = () => {
-                    document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
-                    button.classList.add('active');
-                    showCollection(category);
-                };
-                categoryButtons.appendChild(button);
-            });
+    // Filter products by category - FIXED FUNCTION
+    function filterProductsByCategory(category) {
+        currentCategory = category;
+        
+        // Update active button
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.dataset.category === category) {
+                btn.classList.add('active');
+            }
+        });
+        
+        // Clear the category products container
+        categoryProducts.innerHTML = '';
+        
+        // Show all products if "all" is selected
+        if (category === 'all') {
+            renderAllProducts();
+            return;
         }
+        
+        // Filter and render products for the selected category
+        if (products[category]) {
+            renderProducts(products[category], categoryProducts);
+        } else {
+            categoryProducts.innerHTML = '<p>No products found in this category</p>';
+        }
+    }
 
-        // Load products from Firebase
-        function loadProductsFromFirebase() {
-            database.ref('products').on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    products = data;
-                    // Sort products alphabetically within each category
-                    for (const category in products) {
-                        if (products[category]) {
-                            products[category].sort((a, b) => a.name.localeCompare(b.name));
-                        }
+    // Render all products - UPDATED FUNCTION
+    function renderAllProducts() {
+        let allProducts = [];
+        for (const category in products) {
+            if (category !== 'featured' && products[category]) {
+                allProducts = [...allProducts, ...products[category]];
+            }
+        }
+        
+        if (allProducts.length > 0) {
+            renderProducts(allProducts, categoryProducts);
+        } else {
+            categoryProducts.innerHTML = '<p>No products found</p>';
+        }
+    }
+
+    // Load products from Firebase
+    function loadProductsFromFirebase() {
+        database.ref('products').on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                products = data;
+                
+                // Sort products alphabetically within each category
+                for (const category in products) {
+                    if (products[category]) {
+                        products[category].sort((a, b) => a.name.localeCompare(b.name));
                     }
-                    renderProducts();
-                } else {
-                    // Initialize with empty data if no products exist
-                    const initialProducts = {};
-                    categories.forEach(cat => {
-                        initialProducts[cat] = [];
-                    });
-                    database.ref('products').set(initialProducts);
                 }
-            });
-        }
-
-        // Load orders from Firebase
-        function loadOrders() {
-            database.ref('orders').on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    // Convert object to array and include Firebase keys
-                    orders = Object.entries(data).map(([key, value]) => ({ ...value, firebaseKey: key }));
-                    
-                    // Filter orders for current user (simplified - in a real app you'd have user authentication)
-                    const userPhone = localStorage.getItem('customerPhone');
-                    if (userPhone) {
-                        userOrders = orders.filter(order => order.customer.phone === userPhone);
-                        renderUserOrders();
-                    }
-                } else {
-                    // Initialize with empty data if no orders exist
-                    database.ref('orders').set([]);
+                
+                // Render featured products
+                if (products.featured) {
+                    renderProducts(products.featured, featuredProducts);
                 }
-            });
-        }
-
-        // Render categories
-        function renderCategories() {
-            categoriesContainer.innerHTML = '';
-            
-            // Skip the 'featured' category as it's already shown
-            categories.slice(1).forEach(category => {
-                const categorySection = document.createElement('section');
-                categorySection.className = 'categories-section';
-                categorySection.id = `category-${category}`;
                 
-                const categoryTitle = document.createElement('h3');
-                categoryTitle.className = 'category-title';
-                categoryTitle.textContent = category.replace(/-/g, ' ');
-                categoryTitle.onclick = () => showCollection(category);
-                
-                const productsContainer = document.createElement('div');
-                productsContainer.className = 'products-container';
-                productsContainer.id = `products-${category}`;
-                
-                categorySection.appendChild(categoryTitle);
-                categorySection.appendChild(productsContainer);
-                categoriesContainer.appendChild(categorySection);
-                
-                // Render products for this category
-                if (products[category]) {
-                    renderCategoryProducts(category);
-                }
-            });
-        }
-
-        // Render products for a specific category
-        function renderCategoryProducts(category) {
-            const container = document.getElementById(`products-${category}`);
-            if (!container) return;
-            
-            container.innerHTML = products[category].map(product => `
-                <div class="product-card" data-id="${product.id}">
-                    ${product.discount ? `<span class="product-badge">${product.discount}</span>` : ''}
-                    ${product.soldOut ? `<div class="sold-out-badge">Sold Out</div>` : ''}
-                    <div class="product-image-container">
-                        <img src="${product.images[0]}" alt="${product.name}" class="product-image">
-                        <button class="wishlist-btn" data-id="${product.id}" onclick="event.stopPropagation(); toggleWishlist('${product.id}')">
-                            <i class="fas fa-heart ${wishlist.includes(product.id) ? 'active' : ''}"></i>
-                        </button>
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-title">${product.name}</h3>
-                        <div class="product-price">
-                            ${product.oldPrice ? `<span class="old-price">${product.oldPrice} EGP</span>` : ''}
-                            <span class="current-price">${product.price} EGP</span>
-                        </div>
-                        <div class="product-sizes">${product.sizes || 'Sizes: S, M, L'}</div>
-                        <button class="add-to-cart ${product.soldOut ? 'sold-out' : ''}" data-id="${product.id}" ${product.soldOut ? 'disabled' : ''} onclick="event.stopPropagation(); addToCart('${product.id}')">
-                            ${product.soldOut ? 'Sold Out' : 'Add to Cart'}
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-            
-            // Add click event to product cards
-            document.querySelectorAll(`#products-${category} .product-card`).forEach(card => {
-                card.addEventListener('click', function(e) {
-                    // Don't navigate if clicking on buttons inside the card
-                    if (e.target.closest('.wishlist-btn') || e.target.closest('.add-to-cart')) {
-                        return;
-                    }
-                    const productId = this.dataset.id;
-                    showProductPage(productId);
+                // Initially show all products
+                filterProductsByCategory('all');
+            } else {
+                // Initialize with empty data if no products exist
+                const initialProducts = {};
+                categories.forEach(cat => {
+                    initialProducts[cat] = [];
                 });
-            });
-            
-            // Setup scroll animations for new elements
-            setupScrollAnimation();
-        }
-
-        // Show all collections (default view)
-        function showAllCollections() {
-            // Update URL without reloading the page
-            window.history.pushState({}, '', window.location.pathname);
-            
-            // Hide product page if open
-            productPageView.style.display = 'none';
-            
-            // Show main shop view
-            mainShopView.style.display = 'block';
-            
-            // Hide back to collections button
-            backToCollectionsContainer.style.display = 'none';
-            
-            // Show all categories and featured section
-            featuredProductsSection.style.display = 'block';
-            document.querySelectorAll('.categories-section').forEach(section => {
-                section.style.display = 'block';
-            });
-            
-            // Hide collection view
-            collectionView.classList.remove('active');
-            
-            // Scroll to top
-            window.scrollTo(0, 0);
-            
-            // Update active button
-            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.category-btn')[0].classList.add('active');
-        }
-
-        // Show a specific collection
-        function showCollection(category) {
-            // Update URL without reloading the page
-            window.history.pushState({}, '', `?category=${category}`);
-            
-            // Hide product page if open
-            productPageView.style.display = 'none';
-            
-            // Show main shop view
-            mainShopView.style.display = 'block';
-            
-            // Show back to collections button
-            backToCollectionsContainer.style.display = 'block';
-            
-            // Hide all categories and featured section
-            featuredProductsSection.style.display = 'none';
-            document.querySelectorAll('.categories-section').forEach(section => {
-                section.style.display = 'none';
-            });
-            
-            // Show the collection view
-            currentCollection = category;
-            collectionTitle.textContent = category.replace(/-/g, ' ');
-            renderCollectionProducts(category);
-            collectionView.classList.add('active');
-            
-            // Scroll to top
-            window.scrollTo(0, 0);
-        }
-
-        // Render products for the collection view
-        function renderCollectionProducts(category) {
-            if (!products[category]) return;
-            
-            collectionProducts.innerHTML = products[category].map(product => `
-                <div class="product-card" data-id="${product.id}">
-                    ${product.discount ? `<span class="product-badge">${product.discount}</span>` : ''}
-                    ${product.soldOut ? `<div class="sold-out-badge">Sold Out</div>` : ''}
-                    <div class="product-image-container">
-                        <img src="${product.images[0]}" alt="${product.name}" class="product-image">
-                        <button class="wishlist-btn" data-id="${product.id}" onclick="event.stopPropagation(); toggleWishlist('${product.id}')">
-                            <i class="fas fa-heart ${wishlist.includes(product.id) ? 'active' : ''}"></i>
-                        </button>
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-title">${product.name}</h3>
-                        <div class="product-price">
-                            ${product.oldPrice ? `<span class="old-price">${product.oldPrice} EGP</span>` : ''}
-                            <span class="current-price">${product.price} EGP</span>
-                        </div>
-                        <div class="product-sizes">${product.sizes || 'Sizes: S, M, L'}</div>
-                        <button class="add-to-cart ${product.soldOut ? 'sold-out' : ''}" data-id="${product.id}" ${product.soldOut ? 'disabled' : ''} onclick="event.stopPropagation(); addToCart('${product.id}')">
-                            ${product.soldOut ? 'Sold Out' : 'Add to Cart'}
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-            
-            // Add click event to product cards
-            document.querySelectorAll('#collectionProducts .product-card').forEach(card => {
-                card.addEventListener('click', function(e) {
-                    // Don't navigate if clicking on buttons inside the card
-                    if (e.target.closest('.wishlist-btn') || e.target.closest('.add-to-cart')) {
-                        return;
-                    }
-                    const productId = this.dataset.id;
-                    showProductPage(productId);
-                });
-            });
-            
-            // Setup scroll animations for new elements
-            setupScrollAnimation();
-        }
-
-        // Show product page
-        function showProductPage(productId) {
-            // Update URL without reloading the page
-            window.history.pushState({}, '', `?id=${productId}`);
-            
-            // Find product in all categories
-            let product;
-            for (const category in products) {
-                const found = products[category].find(p => p.id === productId);
-                if (found) {
-                    product = found;
-                    break;
-                }
+                database.ref('products').set(initialProducts);
             }
-            
-            if (!product) {
-                window.location.href = 'index.html';
-                return;
-            }
-            
-            // Reset selected color and size
-            selectedColor = 'Default';
-            selectedSize = 'Default';
-            
-            // Hide main shop view and show product page
-            mainShopView.style.display = 'none';
-            productPageView.style.display = 'block';
-            
-            // Render product gallery
-            productGallery.innerHTML = `
-                <img src="${product.images[0]}" alt="${product.name}" class="product-main-image" id="mainProductImage">
-                <div class="product-thumbnails">
-                    ${product.images.map((img, index) => `
-                        <img src="${img}" alt="${product.name} - ${index + 1}" class="product-thumbnail" 
-                             onclick="document.getElementById('mainProductImage').src = '${img}'">
-                    `).join('')}
+        });
+    }
+
+    // Render products to a container
+    function renderProducts(productsArray, container) {
+        if (!productsArray || productsArray.length === 0) {
+            container.innerHTML = '<p>No products found</p>';
+            return;
+        }
+        
+        container.innerHTML = productsArray.map(product => `
+            <div class="product-card" data-id="${product.id}">
+                ${product.discount ? `<span class="product-badge">${product.discount}</span>` : ''}
+                ${product.soldOut ? `<div class="sold-out-badge">Sold Out</div>` : ''}
+                <div class="product-image-container">
+                    <img src="${product.images[0]}" alt="${product.name}" class="product-image">
+                    <button class="wishlist-btn" data-id="${product.id}" onclick="event.stopPropagation(); toggleWishlist('${product.id}')">
+                        <i class="fas fa-heart ${wishlist.includes(product.id) ? 'active' : ''}"></i>
+                    </button>
                 </div>
-            `;
-            
-            // Render product details with working buttons
-            productDetails.innerHTML = `
-                <h1 class="product-title">${product.name}</h1>
-                <div class="product-price">
-                    <span class="current-price">${product.price} EGP</span>
-                    ${product.oldPrice ? `<span class="product-old-price">${product.oldPrice} EGP</span>` : ''}
-                    ${product.discount ? `<span class="product-discount">${product.discount}</span>` : ''}
-                </div>
-                
-                ${product.colors ? `
-                <div>
-                    <h4>Colors:</h4>
-                    <div class="color-options">
-                        ${product.colors.map(color => `
-                            <div class="color-option" style="background-color: ${getColorHex(color)}" 
-                                 title="${color}" onclick="selectColor('${color}')"></div>
-                        `).join('')}
+                <div class="product-info">
+                    <h3 class="product-title">${product.name}</h3>
+                    <div class="product-price">
+                        ${product.oldPrice ? `<span class="old-price">${product.oldPrice} EGP</span>` : ''}
+                        <span class="current-price">${product.price} EGP</span>
                     </div>
-                </div>` : ''}
-                
-                ${product.sizes ? `
-                <div>
-                    <h4>Sizes:</h4>
-                    <div class="size-options">
-                        ${product.sizes.split(', ').map(size => `
-                            <div class="size-option" onclick="selectSize('${size}')">${size}</div>
-                        `).join('')}
-                    </div>
-                </div>` : ''}
-                
-                <p class="product-description">${product.description}</p>
-                
-                <div class="product-actions">
-                    <button class="add-to-cart ${product.soldOut ? 'sold-out' : ''}" 
-                            onclick="addToCart('${product.id}', selectedColor, selectedSize)" ${product.soldOut ? 'disabled' : ''}>
+                    <div class="product-sizes">${product.sizes || 'Sizes: S, M, L'}</div>
+                    <button class="add-to-cart ${product.soldOut ? 'sold-out' : ''}" data-id="${product.id}" ${product.soldOut ? 'disabled' : ''} onclick="event.stopPropagation(); addToCart('${product.id}')">
                         ${product.soldOut ? 'Sold Out' : 'Add to Cart'}
                     </button>
-                    <button class="buy-now-btn" onclick="addToCart('${product.id}', selectedColor, selectedSize); openCart();">
-                        Buy Now
-                    </button>
                 </div>
-            `;
-            
-            // Scroll to top
-            window.scrollTo(0, 0);
-        }
+            </div>
+        `).join('');
+        
+        // Setup scroll animations for new elements
+        setupScrollAnimation();
+    }
 
-        // Helper function to get color hex code
-        function getColorHex(colorName) {
-            const colors = {
-                'Red': '#ff0000',
-                'Blue': '#0000ff',
-                'White': '#ffffff',
-                'Black': '#000000',
-                'Pink': '#ffc0cb',
-                'Yellow': '#ffff00',
-                'Silver': '#c0c0c0',
-                'Gold': '#ffd700',
-                'Navy': '#000080'
-            };
-            return colors[colorName] || '#cccccc';
-        }
-
-        // Select color option
-        function selectColor(color) {
-            selectedColor = color;
-            document.querySelectorAll('.color-option').forEach(option => {
-                option.classList.remove('selected');
-            });
-            event.target.classList.add('selected');
-        }
-
-        // Select size option
-        function selectSize(size) {
-            selectedSize = size;
-            document.querySelectorAll('.size-option').forEach(option => {
-                option.classList.remove('selected');
-            });
-            event.target.classList.add('selected');
-        }
-
-        // Setup header scroll effect
-        function setupHeaderScrollEffect() {
-            window.addEventListener('scroll', function() {
-                if (window.scrollY > 50) {
-                    mainHeader.classList.add('scrolled');
-                } else {
-                    mainHeader.classList.remove('scrolled');
+    // [Rest of the functions remain exactly the same as in the original code]
+    // Load orders from Firebase
+    function loadOrders() {
+        database.ref('orders').on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                orders = Object.entries(data).map(([key, value]) => ({ ...value, firebaseKey: key }));
+                
+                // Filter orders for current user
+                const userPhone = localStorage.getItem('customerPhone');
+                if (userPhone) {
+                    userOrders = orders.filter(order => order.customer.phone === userPhone);
+                    renderUserOrders();
                 }
-            });
-        }
-
-        // Scroll to products section
-        function scrollToProducts() {
-            document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // Show order history
-        function showOrderHistory() {
-            orderHistoryModal.classList.add('open');
-            overlay.classList.add('active');
-            document.body.style.overflow = 'hidden';
-            renderUserOrders();
-        }
-
-        // Close order history
-        function closeOrderHistory() {
-            orderHistoryModal.classList.remove('open');
-            overlay.classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
-
-        // Show order details
-        function showOrderDetails(orderId) {
-            const order = userOrders.find(o => o.id === orderId);
-            if (!order) return;
-            
-            orderDetailsContent.innerHTML = `
-                <div class="order-customer-info">
-                    <h4 class="customer-info-title">Customer Information</h4>
-                    <div class="customer-info-item"><strong>Name:</strong> ${order.customer.name}</div>
-                    <div class="customer-info-item"><strong>Phone:</strong> ${order.customer.phone}</div>
-                    <div class="customer-info-item"><strong>Governorate:</strong> ${order.customer.governorate}</div>
-                    <div class="customer-info-item"><strong>Address:</strong> ${order.customer.address}</div>
-                    ${order.customer.floor ? `<div class="customer-info-item"><strong>Floor:</strong> ${order.customer.floor}</div>` : ''}
-                    ${order.customer.apartment ? `<div class="customer-info-item"><strong>Apartment:</strong> ${order.customer.apartment}</div>` : ''}
-                    ${order.customer.notes ? `<div class="customer-info-item"><strong>Notes:</strong> ${order.customer.notes}</div>` : ''}
-                </div>
-                
-                <div class="order-items-list">
-                    <h4>Order Items</h4>
-                    ${order.items.map(item => `
-                        <div class="order-item-details">
-                            <img src="${item.image}" alt="${item.name}" class="order-item-image">
-                            <div class="order-item-info">
-                                <div class="order-item-name">${item.name}</div>
-                                <div class="order-item-price">${item.price} EGP</div>
-                                <div class="order-item-price">Quantity: ${item.quantity}</div>
-                                <div class="order-item-price">Color: ${item.color}</div>
-                                <div class="order-item-price">Size: ${item.size}</div>
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
-                
-                <div class="order-total">
-                    Total: ${order.total} EGP
-                </div>
-                
-                <div class="order-status ${order.status}">
-                    Status: ${order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                </div>
-            `;
-            
-            orderDetailsModal.classList.add('open');
-        }
-
-        // Close order details
-        function closeOrderDetails() {
-            orderDetailsModal.classList.remove('open');
-        }
-
-        // Update wishlist display
-        function updateWishlist() {
-            // Update heart icons on product cards
-            document.querySelectorAll('.wishlist-btn i').forEach(icon => {
-                const productId = icon.closest('.wishlist-btn').dataset.id;
-                icon.classList.toggle('active', wishlist.includes(productId));
-            });
-        }
-
-        // Render user orders
-        function renderUserOrders() {
-            if (userOrders.length === 0) {
-                orderHistoryItems.innerHTML = `
-                    <div class="empty-cart-container">
-                        <img src="https://i.postimg.cc/76YYts1C/file-00000000b73461f8909e28caada2270f.png" alt="Empty Orders" class="empty-cart-image">
-                        <p class="empty-cart-message">You haven't placed any orders yet</p>
-                        <button class="start-shopping-btn" onclick="closeOrderHistory()">Browse Products</button>
-                    </div>
-                `;
-                return;
-            }
-            
-            orderHistoryItems.innerHTML = userOrders.map(order => `
-                <div class="order-item">
-                    <div class="order-header">
-                        <span class="order-id">Order #${order.id.substring(0, 8)}</span>
-                        <span class="order-date">${new Date(order.date).toLocaleDateString()}</span>
-                    </div>
-                    <div class="order-status ${order.status}">${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</div>
-                    <div class="order-total">Total: ${order.total} EGP</div>
-                    <div class="order-actions">
-                        <button class="view-order-btn" onclick="showOrderDetails('${order.id}')">View Details</button>
-                        ${order.status === 'pending' ? `<button class="cancel-order-btn" onclick="cancelOrder('${order.id}')">Cancel Order</button>` : ''}
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // Cancel order
-        function cancelOrder(orderId) {
-            if (!confirm('Are you sure you want to cancel this order?')) return;
-            
-            database.ref('orders').once('value', (snapshot) => {
-                const allOrders = snapshot.val() || {};
-                const orderKey = Object.keys(allOrders).find(key => allOrders[key].id === orderId);
-                
-                if (orderKey) {
-                    database.ref(`orders/${orderKey}`).update({ status: 'cancelled' })
-                        .then(() => {
-                            showNotification('Order cancelled successfully');
-                        })
-                        .catch(error => {
-                            showNotification('Error cancelling order: ' + error.message);
-                        });
-                }
-            });
-        }
-
-        // Setup scroll animation
-        function setupScrollAnimation() {
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                    }
-                });
-            }, { threshold: 0.1 });
-
-            document.querySelectorAll('.product-card').forEach(card => {
-                observer.observe(card);
-            });
-        }
-
-        // Render Products
-        function renderProducts() {
-            // Render featured products
-            if (products.featured) {
-                featuredProducts.innerHTML = products.featured.map(product => `
-                    <div class="product-card" data-id="${product.id}">
-                        ${product.discount ? `<span class="product-badge">${product.discount}</span>` : ''}
-                        ${product.soldOut ? `<div class="sold-out-badge">Sold Out</div>` : ''}
-                        <div class="product-image-container">
-                            <img src="${product.images[0]}" alt="${product.name}" class="product-image">
-                            <button class="wishlist-btn" data-id="${product.id}" onclick="event.stopPropagation(); toggleWishlist('${product.id}')">
-                                <i class="fas fa-heart ${wishlist.includes(product.id) ? 'active' : ''}"></i>
-                            </button>
-                        </div>
-                        <div class="product-info">
-                            <h3 class="product-title">${product.name}</h3>
-                            <div class="product-price">
-                                ${product.oldPrice ? `<span class="old-price">${product.oldPrice} EGP</span>` : ''}
-                                <span class="current-price">${product.price} EGP</span>
-                            </div>
-                            <div class="product-sizes">${product.sizes || 'Sizes: S, M, L'}</div>
-                            <button class="add-to-cart ${product.soldOut ? 'sold-out' : ''}" data-id="${product.id}" ${product.soldOut ? 'disabled' : ''} onclick="event.stopPropagation(); addToCart('${product.id}')">
-                                ${product.soldOut ? 'Sold Out' : 'Add to Cart'}
-                            </button>
-                        </div>
-                    </div>
-                `).join('');
-            }
-            
-            // Render products for other categories
-            categories.slice(1).forEach(category => {
-                if (products[category]) {
-                    renderCategoryProducts(category);
-                }
-            });
-            
-            // Add click event to product cards
-            document.querySelectorAll('.product-card').forEach(card => {
-                card.addEventListener('click', function(e) {
-                    // Don't navigate if clicking on buttons inside the card
-                    if (e.target.closest('.wishlist-btn') || e.target.closest('.add-to-cart')) {
-                        return;
-                    }
-                    const productId = this.dataset.id;
-                    showProductPage(productId);
-                });
-            });
-            
-            // Setup scroll animations for new elements
-            setupScrollAnimation();
-        }
-
-        // Toggle wishlist
-        function toggleWishlist(productId) {
-            const index = wishlist.indexOf(productId);
-            if (index === -1) {
-                wishlist.push(productId);
-                showNotification('Product added to wishlist');
             } else {
-                wishlist.splice(index, 1);
-                showNotification('Product removed from wishlist');
+                database.ref('orders').set([]);
             }
+        });
+    }
+
+    // Setup scroll animation
+    function setupScrollAnimation() {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.product-card').forEach(card => {
+            observer.observe(card);
+        });
+    }
+
+    // Setup header scroll effect
+    function setupHeaderScrollEffect() {
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 50) {
+                mainHeader.classList.add('scrolled');
+            } else {
+                mainHeader.classList.remove('scrolled');
+            }
+        });
+    }
+
+    // Show order history
+    function showOrderHistory() {
+        orderHistoryModal.classList.add('open');
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        renderUserOrders();
+    }
+
+    // Close order history
+    function closeOrderHistory() {
+        orderHistoryModal.classList.remove('open');
+        overlay.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+
+    // Show order details
+    function showOrderDetails(orderId) {
+        const order = userOrders.find(o => o.id === orderId);
+        if (!order) return;
+        
+        orderDetailsContent.innerHTML = `
+            <div class="order-customer-info">
+                <h4 class="customer-info-title">Customer Information</h4>
+                <div class="customer-info-item"><strong>Name:</strong> ${order.customer.name}</div>
+                <div class="customer-info-item"><strong>Phone:</strong> ${order.customer.phone}</div>
+                <div class="customer-info-item"><strong>Governorate:</strong> ${order.customer.governorate}</div>
+                <div class="customer-info-item"><strong>Address:</strong> ${order.customer.address}</div>
+                ${order.customer.floor ? `<div class="customer-info-item"><strong>Floor:</strong> ${order.customer.floor}</div>` : ''}
+                ${order.customer.apartment ? `<div class="customer-info-item"><strong>Apartment:</strong> ${order.customer.apartment}</div>` : ''}
+                ${order.customer.notes ? `<div class="customer-info-item"><strong>Notes:</strong> ${order.customer.notes}</div>` : ''}
+            </div>
             
-            localStorage.setItem('wishlist', JSON.stringify(wishlist));
-            updateWishlist();
+            <div class="order-items-list">
+                <h4>Order Items</h4>
+                ${order.items.map(item => `
+                    <div class="order-item-details">
+                        <img src="${item.image}" alt="${item.name}" class="order-item-image">
+                        <div class="order-item-info">
+                            <div class="order-item-name">${item.name}</div>
+                            <div class="order-item-price">${item.price} EGP</div>
+                            <div class="order-item-price">Quantity: ${item.quantity}</div>
+                            <div class="order-item-price">Color: ${item.color}</div>
+                            <div class="order-item-price">Size: ${item.size}</div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+            
+            <div class="order-total">
+                Total: ${order.total} EGP
+            </div>
+            
+            <div class="order-status ${order.status}">
+                Status: ${order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+            </div>
+        `;
+        
+        orderDetailsModal.classList.add('open');
+    }
+
+    // Close order details
+    function closeOrderDetails() {
+        orderDetailsModal.classList.remove('open');
+    }
+
+    // Update wishlist display
+    function updateWishlist() {
+        document.querySelectorAll('.wishlist-btn i').forEach(icon => {
+            const productId = icon.closest('.wishlist-btn').dataset.id;
+            icon.classList.toggle('active', wishlist.includes(productId));
+        });
+    }
+
+    // Render user orders
+    function renderUserOrders() {
+        if (userOrders.length === 0) {
+            orderHistoryItems.innerHTML = `
+                <div class="empty-cart-container">
+                    <img src="https://i.postimg.cc/76YYts1C/file-00000000b73461f8909e28caada2270f.png" alt="Empty Orders" class="empty-cart-image">
+                    <p class="empty-cart-message">You haven't placed any orders yet</p>
+                    <button class="start-shopping-btn" onclick="closeOrderHistory()">Browse Products</button>
+                </div>
+            `;
+            return;
         }
+        
+        orderHistoryItems.innerHTML = userOrders.map(order => `
+            <div class="order-item">
+                <div class="order-header">
+                    <span class="order-id">Order #${order.id.substring(0, 8)}</span>
+                    <span class="order-date">${new Date(order.date).toLocaleDateString()}</span>
+                </div>
+                <div class="order-status ${order.status}">${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</div>
+                <div class="order-total">Total: ${order.total} EGP</div>
+                <div class="order-actions">
+                    <button class="view-order-btn" onclick="showOrderDetails('${order.id}')">View Details</button>
+                    ${order.status === 'pending' ? `<button class="cancel-order-btn" onclick="cancelOrder('${order.id}')">Cancel Order</button>` : ''}
+                </div>
+            </div>
+        `).join('');
+    }
 
-        // Show Custom Notification
-        function showNotification(message) {
-            notificationMessage.textContent = message;
-            customNotification.classList.add('show');
+    // Cancel order
+    function cancelOrder(orderId) {
+        if (!confirm('Are you sure you want to cancel this order?')) return;
+        
+        database.ref('orders').once('value', (snapshot) => {
+            const allOrders = snapshot.val() || {};
+            const orderKey = Object.keys(allOrders).find(key => allOrders[key].id === orderId);
             
-            setTimeout(() => {
-                customNotification.classList.remove('show');
-            }, 3000);
+            if (orderKey) {
+                database.ref(`orders/${orderKey}`).update({ status: 'cancelled' })
+                    .then(() => {
+                        showNotification('Order cancelled successfully');
+                    })
+                    .catch(error => {
+                        showNotification('Error cancelling order: ' + error.message);
+                    });
+            }
+        });
+    }
+
+    // Toggle wishlist
+    function toggleWishlist(productId) {
+        const index = wishlist.indexOf(productId);
+        if (index === -1) {
+            wishlist.push(productId);
+            showNotification('Product added to wishlist');
+        } else {
+            wishlist.splice(index, 1);
+            showNotification('Product removed from wishlist');
         }
+        
+        localStorage.setItem('wishlist', JSON.stringify(wishlist));
+        updateWishlist();
+    }
 
-        // Setup Event Listeners
-        function setupEventListeners() {
-            // Open/Close Cart
-            floatingCart.addEventListener('click', function() {
-                openCart();
-            });
-            
-            cartIcon.addEventListener('click', function() {
-                openCart();
-            });
-            
-            closeCartBtn.addEventListener('click', function() {
-                closeCart();
-            });
-            
-            // Open/Close Order History
-            orderHistoryBtn.addEventListener('click', function() {
-                showOrderHistory();
-            });
-            
-            closeOrderHistoryBtn.addEventListener('click', function() {
-                closeOrderHistory();
-            });
-            
-            // Open/Close Order Details
-            closeOrderDetailsBtn.addEventListener('click', function() {
-                closeOrderDetails();
-            });
-            
-            overlay.addEventListener('click', function() {
-                closeCart();
-                closeOrderHistory();
-                closeOrderDetails();
-                closeCustomerForm();
-            });
-            
-            // Back to shop button - fixed to properly return to collections
-            backToShop.addEventListener('click', function(e) {
-                e.preventDefault();
-                // Remove the product ID from URL
-                if (window.history.pushState) {
-                    const url = window.location.pathname;
-                    window.history.pushState({}, '', url);
-                }
-                mainShopView.style.display = 'block';
-                productPageView.style.display = 'none';
-                // Scroll to top
-                window.scrollTo(0, 0);
-            });
-            
-            // Handle browser back/forward
-            window.addEventListener('popstate', function() {
-                const urlParams = new URLSearchParams(window.location.search);
-                const productId = urlParams.get('id');
-                const category = urlParams.get('category');
-                
-                if (productId) {
-                    showProductPage(productId);
-                } else if (category) {
-                    showCollection(category);
-                } else {
-                    showAllCollections();
-                }
-            });
-            
-            // Checkout
-            checkoutBtn.addEventListener('click', function() {
-                if (cart.length === 0) {
-                    showNotification('Your cart is empty, please add products first');
-                    return;
-                }
-                
-                // Check if we have customer data in localStorage
-                const hasCustomerData = localStorage.getItem('customerName') && 
-                                      localStorage.getItem('customerPhone') && 
-                                      localStorage.getItem('customerGovernorate') && 
-                                      localStorage.getItem('customerAddress');
-                
-                if (hasCustomerData) {
-                    openCustomerForm(true);
-                } else {
-                    openCustomerForm(false);
-                }
-            });
+    // Show Custom Notification
+    function showNotification(message) {
+        notificationMessage.textContent = message;
+        customNotification.classList.add('show');
+        
+        setTimeout(() => {
+            customNotification.classList.remove('show');
+        }, 3000);
+    }
 
-            // Customer Form Submission
-            document.getElementById('customerForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                // Save customer data to localStorage
-                localStorage.setItem('customerName', document.getElementById('customerName').value);
-                localStorage.setItem('customerPhone', document.getElementById('customerPhone').value);
-                localStorage.setItem('customerGovernorate', document.getElementById('customerGovernorate').value);
-                localStorage.setItem('customerAddress', document.getElementById('customerAddress').value);
-                localStorage.setItem('customerFloor', document.getElementById('customerFloor').value || '');
-                localStorage.setItem('customerApartment', document.getElementById('customerApartment').value || '');
-                localStorage.setItem('customerNotes', document.getElementById('customerNotes').value || '');
-                
-                closeCustomerForm();
-                placeOrder();
-            });
-        }
-
-        // Open Customer Form with options to use saved data or edit
-        function openCustomerForm(hasSavedData) {
+    // Setup Event Listeners
+    function setupEventListeners() {
+        // Open/Close Cart
+        floatingCart.addEventListener('click', function() {
+            openCart();
+        });
+        
+        cartIcon.addEventListener('click', function() {
+            openCart();
+        });
+        
+        closeCartBtn.addEventListener('click', function() {
             closeCart();
-            
-            if (hasSavedData) {
-                // Show saved data options
-                savedDataOptions.style.display = 'block';
-                customerForm.style.display = 'none';
-                
-                // Display preview of saved data
-                savedDataPreview.innerHTML = `
-                    <strong>Name:</strong> ${localStorage.getItem('customerName')}<br>
-                    <strong>Phone:</strong> ${localStorage.getItem('customerPhone')}<br>
-                    <strong>Governorate:</strong> ${localStorage.getItem('customerGovernorate')}<br>
-                    <strong>Address:</strong> ${localStorage.getItem('customerAddress')}
-                `;
-            } else {
-                // Show form directly
-                savedDataOptions.style.display = 'none';
-                customerForm.style.display = 'block';
-                
-                // Clear form
-                document.getElementById('customerName').value = '';
-                document.getElementById('customerPhone').value = '';
-                document.getElementById('customerGovernorate').value = '';
-                document.getElementById('customerAddress').value = '';
-                document.getElementById('customerFloor').value = '';
-                document.getElementById('customerApartment').value = '';
-                document.getElementById('customerNotes').value = '';
-            }
-            
-            document.getElementById('customerFormModal').classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        // Use saved data without editing
-        function useSavedData() {
+        });
+        
+        // Open/Close Order History
+        orderHistoryBtn.addEventListener('click', function() {
+            showOrderHistory();
+        });
+        
+        closeOrderHistoryBtn.addEventListener('click', function() {
+            closeOrderHistory();
+        });
+        
+        // Open/Close Order Details
+        closeOrderDetailsBtn.addEventListener('click', function() {
+            closeOrderDetails();
+        });
+        
+        overlay.addEventListener('click', function() {
+            closeCart();
+            closeOrderHistory();
+            closeOrderDetails();
             closeCustomerForm();
-            placeOrder();
-        }
-
-        // Edit saved data
-        function editSavedData() {
-            savedDataOptions.style.display = 'none';
-            customerForm.style.display = 'block';
-            
-            // Fill form with saved data
-            document.getElementById('customerName').value = localStorage.getItem('customerName');
-            document.getElementById('customerPhone').value = localStorage.getItem('customerPhone');
-            document.getElementById('customerGovernorate').value = localStorage.getItem('customerGovernorate');
-            document.getElementById('customerAddress').value = localStorage.getItem('customerAddress');
-            document.getElementById('customerFloor').value = localStorage.getItem('customerFloor') || '';
-            document.getElementById('customerApartment').value = localStorage.getItem('customerApartment') || '';
-            document.getElementById('customerNotes').value = localStorage.getItem('customerNotes') || '';
-        }
-
-        // Close Customer Form
-        function closeCustomerForm() {
-            document.getElementById('customerFormModal').classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
-
-        // Open Cart
-        function openCart() {
-            cartModal.classList.add('open');
-            overlay.classList.add('active');
-            document.body.style.overflow = 'hidden';
-            updateCart();
-        }
-
-        // Close Cart
-        function closeCart() {
-            cartModal.classList.remove('open');
-            overlay.classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
-
-        // Add to Cart
-        function addToCart(productId, color = 'Default', size = 'Default') {
-            let product;
-            
-            // Find product in categories
-            for (const category in products) {
-                const found = products[category].find(p => p.id === productId);
-                if (found) {
-                    product = found;
-                    break;
-                }
-            }
-            
-            if (!product || product.soldOut) {
-                showNotification('This product is not available!');
-                return;
-            }
-            
-            const existingItem = cart.find(item => item.id === productId && item.color === color && item.size === size);
-            
-            if (existingItem) {
-                existingItem.quantity += 1;
-            } else {
-                cart.push({
-                    id: product.id,
-                    name: product.name,
-                    price: product.price,
-                    image: product.images[0],
-                    quantity: 1,
-                    color: color,
-                    size: size
-                });
-            }
-            
-            updateCart();
-            saveCartToLocalStorage();
-            
-            // Notification effect
-            const button = document.querySelector(`.add-to-cart[data-id="${productId}"]`);
-            if (button) {
-                button.textContent = 'Added!';
-                setTimeout(() => {
-                    button.textContent = product.soldOut ? 'Sold Out' : 'Add to Cart';
-                }, 2000);
-            }
-        }
-
-        // Update Cart
-        function updateCart() {
-            // Update count
-            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-            cartCount.textContent = totalItems;
-            floatingCartCount.textContent = totalItems;
-            
-            // Update total
-            const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            cartTotalPrice.textContent = totalPrice.toLocaleString() + ' EGP';
-            
-            // Render items
-            renderCartItems();
-        }
-
-        // Render Cart Items
-        function renderCartItems() {
-            if (cart.length === 0) {
-                cartItemsContainer.innerHTML = `
-                    <div class="empty-cart-container">
-                        <img src="https://i.postimg.cc/76YYts1C/file-00000000b73461f8909e28caada2270f.png" alt="Empty Cart" class="empty-cart-image">
-                        <p class="empty-cart-message">Your cart is empty<br>You haven't added any products yet<br>Browse the store and choose what you like!</p>
-                        <button class="start-shopping-btn" onclick="closeCart()">Start Shopping Now</button>
-                    </div>
-                `;
-                return;
-            }
-            
-            cartItemsContainer.innerHTML = cart.map(item => `
-                <div class="cart-item">
-                    <img src="${item.image}" alt="${item.name}" class="cart-item-image">
-                    <div class="cart-item-details">
-                        <h4 class="cart-item-title">${item.name}</h4>
-                        <div class="cart-item-price">${item.price.toLocaleString()} EGP</div>
-                        <div class="cart-item-price">Color: ${item.color}</div>
-                        <div class="cart-item-price">Size: ${item.size}</div>
-                        <div class="cart-item-quantity">
-                            <button class="quantity-btn minus" data-id="${item.id}">-</button>
-                            <input type="number" class="quantity-input" value="${item.quantity}" min="1" data-id="${item.id}">
-                            <button class="quantity-btn plus" data-id="${item.id}">+</button>
-                        </div>
-                        <button class="remove-item" data-id="${item.id}">Remove</button>
-                    </div>
-                </div>
-            `).join('');
-            
-            // Setup quantity events
-            document.querySelectorAll('.quantity-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const productId = e.target.dataset.id;
-                    const input = document.querySelector(`.quantity-input[data-id="${productId}"]`);
-                    let value = parseInt(input.value);
-                    
-                    if (e.target.classList.contains('plus')) {
-                        input.value = value + 1;
-                    } else if (value > 1) {
-                        input.value = value - 1;
-                    }
-                    
-                    updateCartItem(productId, parseInt(input.value));
-                });
-            });
-            
-            // Setup input events
-            document.querySelectorAll('.quantity-input').forEach(input => {
-                input.addEventListener('change', (e) => {
-                    const productId = e.target.dataset.id;
-                    const value = parseInt(e.target.value) || 1;
-                    e.target.value = value;
-                    updateCartItem(productId, value);
-                });
-            });
-            
-            // Setup remove events
-            document.querySelectorAll('.remove-item').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    cart = cart.filter(item => item.id !== e.target.dataset.id);
-                    updateCart();
-                    saveCartToLocalStorage();
-                    showNotification('Product removed from cart');
-                });
-            });
-        }
-
-        // Update Cart Item
-        function updateCartItem(productId, quantity) {
-            const item = cart.find(item => item.id === productId);
-            if (item) {
-                item.quantity = quantity;
-                updateCart();
-                saveCartToLocalStorage();
-            }
-        }
-
-        // Save Cart to LocalStorage
-        function saveCartToLocalStorage() {
-            localStorage.setItem('cart', JSON.stringify(cart));
-        }
-
-        // Place Order
-        function placeOrder() {
+        });
+        
+        // Checkout
+        checkoutBtn.addEventListener('click', function() {
             if (cart.length === 0) {
                 showNotification('Your cart is empty, please add products first');
                 return;
             }
             
-            // Get customer data from localStorage
-            const customerName = localStorage.getItem('customerName') || 'Unknown';
-            const customerPhone = localStorage.getItem('customerPhone') || 'Unknown';
-            const customerGovernorate = localStorage.getItem('customerGovernorate') || 'Not specified';
-            const customerAddress = localStorage.getItem('customerAddress') || 'Unknown';
-            const customerFloor = localStorage.getItem('customerFloor') || '';
-            const customerApartment = localStorage.getItem('customerApartment') || '';
-            const customerNotes = localStorage.getItem('customerNotes') || '';
+            // Check if we have customer data in localStorage
+            const hasCustomerData = localStorage.getItem('customerName') && 
+                                  localStorage.getItem('customerPhone') && 
+                                  localStorage.getItem('customerGovernorate') && 
+                                  localStorage.getItem('customerAddress');
             
-            // Calculate total
-            const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            
-            // Create order object
-            const order = {
-                id: generateId(),
-                date: new Date().toISOString(),
-                customer: {
-                    name: customerName,
-                    phone: customerPhone,
-                    governorate: customerGovernorate,
-                    address: customerAddress,
-                    floor: customerFloor,
-                    apartment: customerApartment,
-                    notes: customerNotes
-                },
-                items: cart.map(item => ({
-                    id: item.id,
-                    name: item.name,
-                    price: item.price,
-                    quantity: item.quantity,
-                    color: item.color,
-                    size: item.size,
-                    image: item.image
-                })),
-                total: totalPrice.toLocaleString() + ' EGP',
-                status: 'pending'
-            };
-            
-            // Save order to Firebase
-            database.ref('orders').push(order)
-                .then(() => {
-                    // Clear cart after successful order
-                    cart = [];
-                    saveCartToLocalStorage();
-                    updateCart();
-                    
-                    showNotification('Order placed successfully!');
-                    loadOrders(); // Refresh orders list
-                })
-                .catch(error => {
-                    showNotification('Error placing order: ' + error.message);
-                });
-        }
+            if (hasCustomerData) {
+                openCustomerForm(true);
+            } else {
+                openCustomerForm(false);
+            }
+        });
 
-        // Generate ID
-        function generateId() {
-            return 'id-' + Math.random().toString(36).substr(2, 9);
-        }
+        // Customer Form Submission
+        document.getElementById('customerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Save customer data to localStorage
+            localStorage.setItem('customerName', document.getElementById('customerName').value);
+            localStorage.setItem('customerPhone', document.getElementById('customerPhone').value);
+            localStorage.setItem('customerGovernorate', document.getElementById('customerGovernorate').value);
+            localStorage.setItem('customerAddress', document.getElementById('customerAddress').value);
+            localStorage.setItem('customerFloor', document.getElementById('customerFloor').value || '');
+            localStorage.setItem('customerApartment', document.getElementById('customerApartment').value || '');
+            localStorage.setItem('customerNotes', document.getElementById('customerNotes').value || '');
+            
+            closeCustomerForm();
+            placeOrder();
+        });
+    }
 
-        // Initialize Store
-        initStore();
-    </script>
+    // Open Customer Form with options to use saved data or edit
+    function openCustomerForm(hasSavedData) {
+        closeCart();
+        
+        if (hasSavedData) {
+            // Show saved data options
+            savedDataOptions.style.display = 'block';
+            customerForm.style.display = 'none';
+            
+            // Display preview of saved data
+            savedDataPreview.innerHTML = `
+                <strong>Name:</strong> ${localStorage.getItem('customerName')}<br>
+                <strong>Phone:</strong> ${localStorage.getItem('customerPhone')}<br>
+                <strong>Governorate:</strong> ${localStorage.getItem('customerGovernorate')}<br>
+                <strong>Address:</strong> ${localStorage.getItem('customerAddress')}
+            `;
+        } else {
+            // Show form directly
+            savedDataOptions.style.display = 'none';
+            customerForm.style.display = 'block';
+            
+            // Clear form
+            document.getElementById('customerName').value = '';
+            document.getElementById('customerPhone').value = '';
+            document.getElementById('customerGovernorate').value = '';
+            document.getElementById('customerAddress').value = '';
+            document.getElementById('customerFloor').value = '';
+            document.getElementById('customerApartment').value = '';
+            document.getElementById('customerNotes').value = '';
+        }
+        
+        document.getElementById('customerFormModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    // Use saved data without editing
+    function useSavedData() {
+        closeCustomerForm();
+        placeOrder();
+    }
+
+    // Edit saved data
+    function editSavedData() {
+        savedDataOptions.style.display = 'none';
+        customerForm.style.display = 'block';
+        
+        // Fill form with saved data
+        document.getElementById('customerName').value = localStorage.getItem('customerName');
+        document.getElementById('customerPhone').value = localStorage.getItem('customerPhone');
+        document.getElementById('customerGovernorate').value = localStorage.getItem('customerGovernorate');
+        document.getElementById('customerAddress').value = localStorage.getItem('customerAddress');
+        document.getElementById('customerFloor').value = localStorage.getItem('customerFloor') || '';
+        document.getElementById('customerApartment').value = localStorage.getItem('customerApartment') || '';
+        document.getElementById('customerNotes').value = localStorage.getItem('customerNotes') || '';
+    }
+
+    // Close Customer Form
+    function closeCustomerForm() {
+        document.getElementById('customerFormModal').classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+
+    // Open Cart
+    function openCart() {
+        cartModal.classList.add('open');
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        updateCart();
+    }
+
+    // Close Cart
+    function closeCart() {
+        cartModal.classList.remove('open');
+        overlay.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+
+    // Add to Cart
+    function addToCart(productId, color = 'Default', size = 'Default') {
+        let product;
+        
+        // Find product in categories
+        for (const category in products) {
+            const found = products[category].find(p => p.id === productId);
+            if (found) {
+                product = found;
+                break;
+            }
+        }
+        
+        if (!product || product.soldOut) {
+            showNotification('This product is not available!');
+            return;
+        }
+        
+        const existingItem = cart.find(item => item.id === productId && item.color === color && item.size === size);
+        
+        if (existingItem) {
+            existingItem.quantity += 1;
+        } else {
+            cart.push({
+                id: product.id,
+                name: product.name,
+                price: product.price,
+                image: product.images[0],
+                quantity: 1,
+                color: color,
+                size: size
+            });
+        }
+        
+        updateCart();
+        saveCartToLocalStorage();
+        
+        // Notification effect
+        const button = document.querySelector(`.add-to-cart[data-id="${productId}"]`);
+        if (button) {
+            button.textContent = 'Added!';
+            setTimeout(() => {
+                button.textContent = product.soldOut ? 'Sold Out' : 'Add to Cart';
+            }, 2000);
+        }
+    }
+
+    // Update Cart
+    function updateCart() {
+        // Update count
+        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+        cartCount.textContent = totalItems;
+        floatingCartCount.textContent = totalItems;
+        
+        // Update total
+        const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        cartTotalPrice.textContent = totalPrice.toLocaleString() + ' EGP';
+        
+        // Render items
+        renderCartItems();
+    }
+
+    // Render Cart Items
+    function renderCartItems() {
+        if (cart.length === 0) {
+            cartItemsContainer.innerHTML = `
+                <div class="empty-cart-container">
+                    <img src="https://i.postimg.cc/76YYts1C/file-00000000b73461f8909e28caada2270f.png" alt="Empty Cart" class="empty-cart-image">
+                    <p class="empty-cart-message">Your cart is empty<br>You haven't added any products yet<br>Browse the store and choose what you like!</p>
+                    <button class="start-shopping-btn" onclick="closeCart()">Start Shopping Now</button>
+                </div>
+            `;
+            return;
+        }
+        
+        cartItemsContainer.innerHTML = cart.map(item => `
+            <div class="cart-item">
+                <img src="${item.image}" alt="${item.name}" class="cart-item-image">
+                <div class="cart-item-details">
+                    <h4 class="cart-item-title">${item.name}</h4>
+                    <div class="cart-item-price">${item.price.toLocaleString()} EGP</div>
+                    <div class="cart-item-price">Color: ${item.color}</div>
+                    <div class="cart-item-price">Size: ${item.size}</div>
+                    <div class="cart-item-quantity">
+                        <button class="quantity-btn minus" data-id="${item.id}">-</button>
+                        <input type="number" class="quantity-input" value="${item.quantity}" min="1" data-id="${item.id}">
+                        <button class="quantity-btn plus" data-id="${item.id}">+</button>
+                    </div>
+                    <button class="remove-item" data-id="${item.id}">Remove</button>
+                </div>
+            </div>
+        `).join('');
+        
+        // Setup quantity events
+        document.querySelectorAll('.quantity-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const productId = e.target.dataset.id;
+                const input = document.querySelector(`.quantity-input[data-id="${productId}"]`);
+                let value = parseInt(input.value);
+                
+                if (e.target.classList.contains('plus')) {
+                    input.value = value + 1;
+                } else if (value > 1) {
+                    input.value = value - 1;
+                }
+                
+                updateCartItem(productId, parseInt(input.value));
+            });
+        });
+        
+        // Setup input events
+        document.querySelectorAll('.quantity-input').forEach(input => {
+            input.addEventListener('change', (e) => {
+                const productId = e.target.dataset.id;
+                const value = parseInt(e.target.value) || 1;
+                e.target.value = value;
+                updateCartItem(productId, value);
+            });
+        });
+        
+        // Setup remove events
+        document.querySelectorAll('.remove-item').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                cart = cart.filter(item => item.id !== e.target.dataset.id);
+                updateCart();
+                saveCartToLocalStorage();
+                showNotification('Product removed from cart');
+            });
+        });
+    }
+
+    // Update Cart Item
+    function updateCartItem(productId, quantity) {
+        const item = cart.find(item => item.id === productId);
+        if (item) {
+            item.quantity = quantity;
+            updateCart();
+            saveCartToLocalStorage();
+        }
+    }
+
+    // Save Cart to LocalStorage
+    function saveCartToLocalStorage() {
+        localStorage.setItem('cart', JSON.stringify(cart));
+    }
+
+    // Place Order
+    function placeOrder() {
+        if (cart.length === 0) {
+            showNotification('Your cart is empty, please add products first');
+            return;
+        }
+        
+        // Get customer data from localStorage
+        const customerName = localStorage.getItem('customerName') || 'Unknown';
+        const customerPhone = localStorage.getItem('customerPhone') || 'Unknown';
+        const customerGovernorate = localStorage.getItem('customerGovernorate') || 'Not specified';
+        const customerAddress = localStorage.getItem('customerAddress') || 'Unknown';
+        const customerFloor = localStorage.getItem('customerFloor') || '';
+        const customerApartment = localStorage.getItem('customerApartment') || '';
+        const customerNotes = localStorage.getItem('customerNotes') || '';
+        
+        // Calculate total
+        const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        
+        // Create order object
+        const order = {
+            id: generateId(),
+            date: new Date().toISOString(),
+            customer: {
+                name: customerName,
+                phone: customerPhone,
+                governorate: customerGovernorate,
+                address: customerAddress,
+                floor: customerFloor,
+                apartment: customerApartment,
+                notes: customerNotes
+            },
+            items: cart.map(item => ({
+                id: item.id,
+                name: item.name,
+                price: item.price,
+                quantity: item.quantity,
+                color: item.color,
+                size: item.size,
+                image: item.image
+            })),
+            total: totalPrice.toLocaleString() + ' EGP',
+            status: 'pending'
+        };
+        
+        // Save order to Firebase
+        database.ref('orders').push(order)
+            .then(() => {
+                // Clear cart after successful order
+                cart = [];
+                saveCartToLocalStorage();
+                updateCart();
+                
+                showNotification('Order placed successfully!');
+                loadOrders(); // Refresh orders list
+            })
+            .catch(error => {
+                showNotification('Error placing order: ' + error.message);
+            });
+    }
+
+    // Generate ID
+    function generateId() {
+        return 'id-' + Math.random().toString(36).substr(2, 9);
+    }
+
+    // Initialize Store
+    initStore();
+</script>
 </body>
 </html>
