@@ -1416,6 +1416,38 @@
             background-color: var(--accent-color);
             color: white;
         }
+
+        /* Back to Collections Button */
+        .back-to-collections {
+            display: inline-block;
+            margin: 20px 0 30px 0;
+            padding: 10px 15px;
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            cursor: pointer;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            width: fit-content;
+        }
+
+        .back-to-collections:hover {
+            text-decoration: underline;
+            transform: translateX(-5px);
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        /* Back to Collections Container */
+        #backToCollectionsContainer {
+            padding: 0 20px;
+            margin-top: 80px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
     </style>
 </head>
 <body>
@@ -1436,6 +1468,13 @@
     <div id="content">
         <!-- Main Shop View (default) -->
         <div class="container" id="mainShopView">
+            <!-- Back to Collections Button (hidden by default) -->
+            <div id="backToCollectionsContainer" style="display: none;">
+                <a class="back-to-collections" id="backToCollectionsBtn">
+                    <i class="fas fa-arrow-left"></i> Back to Collections
+                </a>
+            </div>
+            
             <!-- Featured Products -->
             <section class="categories-section" id="products">
                 <h2 class="section-heading">Latest Collections</h2>
@@ -1675,6 +1714,10 @@
         let orders = [];
         let userOrders = [];
         
+        // Track selected color and size for current product
+        let selectedColor = 'Default';
+        let selectedSize = 'Default';
+        
         // Cart Variables
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
         let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
@@ -1704,11 +1747,13 @@
         const productGallery = document.getElementById('productGallery');
         const productDetails = document.getElementById('productDetails');
         const backToShop = document.getElementById('backToShop');
+        const backToCollectionsBtn = document.getElementById('backToCollectionsBtn');
         const savedDataOptions = document.getElementById('savedDataOptions');
         const savedDataPreview = document.getElementById('savedDataPreview');
         const customerForm = document.getElementById('customerForm');
         const mainHeader = document.getElementById('mainHeader');
         const categoryButtons = document.getElementById('categoryButtons');
+        const backToCollectionsContainer = document.getElementById('backToCollectionsContainer');
 
         // Initialize Store
         function initStore() {
@@ -1760,7 +1805,7 @@
             allButton.onclick = () => {
                 document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
                 allButton.classList.add('active');
-                showAllProducts();
+                resetToInitialView();
             };
             categoryButtons.appendChild(allButton);
             
@@ -1776,6 +1821,38 @@
                 };
                 categoryButtons.appendChild(button);
             });
+        }
+
+        // Reset to initial view (like when first opening the website)
+        function resetToInitialView() {
+            // Clear URL parameters
+            if (window.history.pushState) {
+                const url = window.location.pathname;
+                window.history.pushState({}, '', url);
+            }
+            
+            // Hide product page if open
+            productPageView.style.display = 'none';
+            
+            // Show main shop view
+            mainShopView.style.display = 'block';
+            
+            // Hide back to collections button
+            backToCollectionsContainer.style.display = 'none';
+            
+            // Show all categories
+            document.querySelectorAll('.categories-section').forEach(section => {
+                section.style.display = 'block';
+            });
+            
+            // Reset active button to "All"
+            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+            if (document.querySelectorAll('.category-btn')[0]) {
+                document.querySelectorAll('.category-btn')[0].classList.add('active');
+            }
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
         }
 
         // Load products from Firebase
@@ -1900,26 +1977,7 @@
 
         // Show all products from all categories
         function showAllProducts() {
-            // Update URL without reloading the page
-            window.history.pushState({}, '', window.location.pathname);
-            
-            // Hide product page if open
-            productPageView.style.display = 'none';
-            
-            // Show main shop view
-            mainShopView.style.display = 'block';
-            
-            // Show all categories
-            document.querySelectorAll('.categories-section').forEach(section => {
-                section.style.display = 'block';
-            });
-            
-            // Scroll to top
-            window.scrollTo(0, 0);
-            
-            // Update active button
-            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.category-btn')[0].classList.add('active');
+            resetToInitialView();
         }
 
         // Show products from a specific category
@@ -1932,6 +1990,9 @@
             
             // Show main shop view
             mainShopView.style.display = 'block';
+            
+            // Show back to collections button
+            backToCollectionsContainer.style.display = 'flex';
             
             // Hide all categories except the selected one
             document.querySelectorAll('.categories-section').forEach(section => {
@@ -1969,6 +2030,10 @@
                 window.location.href = 'index.html';
                 return;
             }
+            
+            // Reset selected color and size
+            selectedColor = 'Default';
+            selectedSize = 'Default';
             
             // Hide main shop view and show product page
             mainShopView.style.display = 'none';
@@ -2019,10 +2084,10 @@
                 
                 <div class="product-actions">
                     <button class="add-to-cart ${product.soldOut ? 'sold-out' : ''}" 
-                            onclick="addToCart('${product.id}')" ${product.soldOut ? 'disabled' : ''}>
+                            onclick="addToCart('${product.id}', selectedColor, selectedSize)" ${product.soldOut ? 'disabled' : ''}>
                         ${product.soldOut ? 'Sold Out' : 'Add to Cart'}
                     </button>
-                    <button class="buy-now-btn" onclick="addToCart('${product.id}'); openCart();">
+                    <button class="buy-now-btn" onclick="addToCart('${product.id}', selectedColor, selectedSize); openCart();">
                         Buy Now
                     </button>
                 </div>
@@ -2050,6 +2115,7 @@
 
         // Select color option
         function selectColor(color) {
+            selectedColor = color;
             document.querySelectorAll('.color-option').forEach(option => {
                 option.classList.remove('selected');
             });
@@ -2058,6 +2124,7 @@
 
         // Select size option
         function selectSize(size) {
+            selectedSize = size;
             document.querySelectorAll('.size-option').forEach(option => {
                 option.classList.remove('selected');
             });
@@ -2334,15 +2401,13 @@
             // Back to shop button - fixed to properly return to collections
             backToShop.addEventListener('click', function(e) {
                 e.preventDefault();
-                // Remove the product ID from URL
-                if (window.history.pushState) {
-                    const url = window.location.pathname;
-                    window.history.pushState({}, '', url);
-                }
-                mainShopView.style.display = 'block';
-                productPageView.style.display = 'none';
-                // Scroll to top
-                window.scrollTo(0, 0);
+                resetToInitialView();
+            });
+            
+            // Back to collections button
+            backToCollectionsBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                resetToInitialView();
             });
             
             // Handle browser back/forward
@@ -2356,8 +2421,7 @@
                 } else if (category) {
                     showCategoryProducts(category);
                 } else {
-                    mainShopView.style.display = 'block';
-                    productPageView.style.display = 'none';
+                    resetToInitialView();
                 }
             });
             
