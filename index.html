@@ -358,7 +358,7 @@
         }
         
         .product-title {
-            font-size: 0.7rem;
+            font-size: 0.99rem;
             margin-bottom: 0;
             font-weight: 500;
             color: var(--primary-text);
@@ -373,23 +373,23 @@
             display: flex;
             align-items: center;
             margin-bottom: 0;
-            font-size: 0.7rem;
         }
         
         .current-price {
             font-weight: 700;
             color: var(--primary-text);
+            font-size: 1.1rem;
         }
         
         .old-price {
-            font-size: 0.6rem;
+            font-size: 0.88rem;
             color: var(--secondary-text);
             text-decoration: line-through;
             margin-left: 11px;
         }
         
         .product-sizes {
-            font-size: 0.6rem;
+            font-size: 0.88rem;
             color: var(--secondary-text);
             margin-bottom: 8.8px;
         }
@@ -401,7 +401,7 @@
             color: var(--bg-color);
             border: none;
             border-radius: 8.8px;
-            font-size: 0.7rem;
+            font-size: 0.99rem;
             font-weight: 500;
             cursor: pointer;
             transition: background-color 0.3s, transform 0.3s;
@@ -1060,28 +1060,6 @@
             transform: translateX(-5px);
         }
 
-        /* Back to Collections Button */
-        .back-to-collections {
-            display: inline-block;
-            margin: 10px 0 20px;
-            color: var(--accent-color);
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s;
-            cursor: pointer;
-            font-size: 0.9rem;
-            padding: 5px 10px;
-            border: 1px solid var(--accent-color);
-            border-radius: 5px;
-        }
-
-        .back-to-collections:hover {
-            text-decoration: none;
-            transform: translateX(-5px);
-            background-color: var(--accent-color);
-            color: white;
-        }
-
         /* Product Details Section */
         .product-details-section {
             margin-top: 30px;
@@ -1438,15 +1416,6 @@
             background-color: var(--accent-color);
             color: white;
         }
-
-        /* Collection View */
-        .collection-view {
-            display: none;
-        }
-
-        .collection-view.active {
-            display: block;
-        }
     </style>
 </head>
 <body>
@@ -1463,27 +1432,37 @@
         </div>
     </header>
     
-    <!-- Main Content -->
-    <div class="container" id="mainContent">
-        <!-- Categories Section -->
-        <section class="categories-section">
-            <h2 class="section-heading">Categories</h2>
-            <div class="category-buttons" id="categoryButtons">
-                <button class="category-btn active" data-category="all">All Products</button>
-                <!-- Category buttons will be loaded here -->
-            </div>
-            <div class="products-container" id="categoryProducts">
-                <!-- Category products will be loaded here -->
-            </div>
-        </section>
+    <!-- Check if we're on a product page or main shop -->
+    <div id="content">
+        <!-- Main Shop View (default) -->
+        <div class="container" id="mainShopView">
+            <!-- Featured Products -->
+            <section class="categories-section" id="products">
+                <h2 class="section-heading">Latest Collections</h2>
+                <div class="category-buttons" id="categoryButtons">
+                    <!-- Category buttons will be added dynamically -->
+                </div>
+                <div class="products-container" id="featuredProducts">
+                    <!-- Featured products will be added dynamically -->
+                </div>
+            </section>
+            
+            <!-- Categories Sections will be added dynamically -->
+            <div id="categoriesContainer"></div>
+        </div>
         
-        <!-- Featured Products -->
-        <section class="categories-section">
-            <h2 class="section-heading">Latest Collections</h2>
-            <div class="products-container" id="featuredProducts">
-                <!-- Featured products will be loaded here -->
+        <!-- Product Page View (hidden by default) -->
+        <div class="product-page" id="productPageView" style="display: none;">
+            <a href="#" class="back-to-shop" id="backToShop"><i class="fas fa-arrow-left"></i> Back to Collections</a>
+            <div class="container product-page-container">
+                <div class="product-gallery" id="productGallery">
+                    <!-- Product images will be added dynamically -->
+                </div>
+                <div class="product-details" id="productDetails">
+                    <!-- Product details will be added dynamically -->
+                </div>
             </div>
-        </section>
+        </div>
     </div>
     
     <!-- Social Media -->
@@ -1505,7 +1484,7 @@
             <i class="fas fa-home"></i>
             <span>Home</span>
         </div>
-        <div class="banner-icon" onclick="document.getElementById('featuredProducts').scrollIntoView({behavior: 'smooth'})">
+        <div class="banner-icon" onclick="scrollToProducts()">
             <i class="fas fa-tshirt"></i>
             <span>Products</span>
         </div>
@@ -1677,7 +1656,7 @@
     <script>
         // Firebase Configuration
         const firebaseConfig = {
-            apiKey: "AIzaSyB_4U1Bk3K8J8Z9Z9Z9Z9Z9Z9Z9Z9Z",
+            apiKey: "AIzaSyB_4U1Bk3K8J8Z9Z9Z9Z9Z9Z9Z9Z9Z9Z",
             authDomain: "test-7d761.firebaseapp.com",
             databaseURL: "https://lady-store-75b73-default-rtdb.firebaseio.com/",
             projectId: "test-7d761",
@@ -1695,7 +1674,6 @@
         let categories = ['featured']; // Default category
         let orders = [];
         let userOrders = [];
-        let currentCategory = 'all';
         
         // Cart Variables
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -1720,14 +1698,34 @@
         const customNotification = document.getElementById('customNotification');
         const notificationMessage = document.getElementById('notificationMessage');
         const featuredProducts = document.getElementById('featuredProducts');
-        const categoryProducts = document.getElementById('categoryProducts');
-        const categoryButtons = document.getElementById('categoryButtons');
+        const categoriesContainer = document.getElementById('categoriesContainer');
+        const mainShopView = document.getElementById('mainShopView');
+        const productPageView = document.getElementById('productPageView');
+        const productGallery = document.getElementById('productGallery');
+        const productDetails = document.getElementById('productDetails');
+        const backToShop = document.getElementById('backToShop');
+        const savedDataOptions = document.getElementById('savedDataOptions');
+        const savedDataPreview = document.getElementById('savedDataPreview');
+        const customerForm = document.getElementById('customerForm');
         const mainHeader = document.getElementById('mainHeader');
+        const categoryButtons = document.getElementById('categoryButtons');
 
         // Initialize Store
         function initStore() {
-            loadCategoriesFromFirebase();
-            loadProductsFromFirebase();
+            // Check if we're viewing a product page
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = urlParams.get('id');
+            const category = urlParams.get('category');
+            
+            if (productId) {
+                showProductPage(productId);
+            } else if (category) {
+                showCategoryProducts(category);
+            } else {
+                loadCategoriesFromFirebase();
+                loadProductsFromFirebase();
+            }
+            
             updateCart();
             updateWishlist();
             loadOrders();
@@ -1741,9 +1739,11 @@
             database.ref('categories').on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (data && Array.isArray(data)) {
-                    categories = ['featured', ...data];
+                    categories = ['featured', ...data]; // Always keep 'featured' as first category
+                    renderCategories();
                     renderCategoryButtons();
                 } else {
+                    // Initialize with default categories if none exist
                     database.ref('categories').set([]);
                 }
             });
@@ -1751,9 +1751,17 @@
 
         // Render category buttons
         function renderCategoryButtons() {
-            // Clear existing buttons (keep "All Products" button)
-            const allButton = document.querySelector('.category-btn[data-category="all"]');
             categoryButtons.innerHTML = '';
+            
+            // Add "All" button
+            const allButton = document.createElement('button');
+            allButton.className = 'category-btn active';
+            allButton.textContent = 'All';
+            allButton.onclick = () => {
+                document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+                allButton.classList.add('active');
+                showAllProducts();
+            };
             categoryButtons.appendChild(allButton);
             
             // Add category buttons (skip 'featured')
@@ -1761,47 +1769,13 @@
                 const button = document.createElement('button');
                 button.className = 'category-btn';
                 button.textContent = category.replace(/-/g, ' ');
-                button.dataset.category = category;
-                button.onclick = () => filterProductsByCategory(category);
+                button.onclick = () => {
+                    document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    showCategoryProducts(category);
+                };
                 categoryButtons.appendChild(button);
             });
-        }
-
-        // Filter products by category
-        function filterProductsByCategory(category) {
-            currentCategory = category;
-            
-            // Update active button
-            document.querySelectorAll('.category-btn').forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.dataset.category === category) {
-                    btn.classList.add('active');
-                }
-            });
-            
-            // Show all products if "All" is selected
-            if (category === 'all') {
-                renderAllProducts();
-                return;
-            }
-            
-            // Filter and render products for the selected category
-            if (products[category]) {
-                renderProducts(products[category], categoryProducts);
-            } else {
-                categoryProducts.innerHTML = '<p>No products found in this category</p>';
-            }
-        }
-
-        // Render all products
-        function renderAllProducts() {
-            let allProducts = [];
-            for (const category in products) {
-                if (category !== 'featured' && products[category]) {
-                    allProducts = [...allProducts, ...products[category]];
-                }
-            }
-            renderProducts(allProducts, categoryProducts);
         }
 
         // Load products from Firebase
@@ -1810,21 +1784,13 @@
                 const data = snapshot.val();
                 if (data) {
                     products = data;
-                    
                     // Sort products alphabetically within each category
                     for (const category in products) {
                         if (products[category]) {
                             products[category].sort((a, b) => a.name.localeCompare(b.name));
                         }
                     }
-                    
-                    // Render featured products
-                    if (products.featured) {
-                        renderProducts(products.featured, featuredProducts);
-                    }
-                    
-                    // Initially show all products
-                    renderAllProducts();
+                    renderProducts();
                 } else {
                     // Initialize with empty data if no products exist
                     const initialProducts = {};
@@ -1836,14 +1802,63 @@
             });
         }
 
-        // Render products to a container
-        function renderProducts(productsArray, container) {
-            if (!productsArray || productsArray.length === 0) {
-                container.innerHTML = '<p>No products found</p>';
-                return;
-            }
+        // Load orders from Firebase
+        function loadOrders() {
+            database.ref('orders').on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    // Convert object to array and include Firebase keys
+                    orders = Object.entries(data).map(([key, value]) => ({ ...value, firebaseKey: key }));
+                    
+                    // Filter orders for current user (simplified - in a real app you'd have user authentication)
+                    const userPhone = localStorage.getItem('customerPhone');
+                    if (userPhone) {
+                        userOrders = orders.filter(order => order.customer.phone === userPhone);
+                        renderUserOrders();
+                    }
+                } else {
+                    // Initialize with empty data if no orders exist
+                    database.ref('orders').set([]);
+                }
+            });
+        }
+
+        // Render categories
+        function renderCategories() {
+            categoriesContainer.innerHTML = '';
             
-            container.innerHTML = productsArray.map(product => `
+            // Skip the 'featured' category as it's already shown
+            categories.slice(1).forEach(category => {
+                const categorySection = document.createElement('section');
+                categorySection.className = 'categories-section';
+                categorySection.id = `category-${category}`;
+                
+                const categoryTitle = document.createElement('h3');
+                categoryTitle.className = 'category-title';
+                categoryTitle.textContent = category.replace(/-/g, ' ');
+                categoryTitle.onclick = () => showCategoryProducts(category);
+                
+                const productsContainer = document.createElement('div');
+                productsContainer.className = 'products-container';
+                productsContainer.id = `products-${category}`;
+                
+                categorySection.appendChild(categoryTitle);
+                categorySection.appendChild(productsContainer);
+                categoriesContainer.appendChild(categorySection);
+                
+                // Render products for this category
+                if (products[category]) {
+                    renderCategoryProducts(category);
+                }
+            });
+        }
+
+        // Render products for a specific category
+        function renderCategoryProducts(category) {
+            const container = document.getElementById(`products-${category}`);
+            if (!container) return;
+            
+            container.innerHTML = products[category].map(product => `
                 <div class="product-card" data-id="${product.id}">
                     ${product.discount ? `<span class="product-badge">${product.discount}</span>` : ''}
                     ${product.soldOut ? `<div class="sold-out-badge">Sold Out</div>` : ''}
@@ -1867,42 +1882,186 @@
                 </div>
             `).join('');
             
+            // Add click event to product cards
+            document.querySelectorAll(`#products-${category} .product-card`).forEach(card => {
+                card.addEventListener('click', function(e) {
+                    // Don't navigate if clicking on buttons inside the card
+                    if (e.target.closest('.wishlist-btn') || e.target.closest('.add-to-cart')) {
+                        return;
+                    }
+                    const productId = this.dataset.id;
+                    showProductPage(productId);
+                });
+            });
+            
             // Setup scroll animations for new elements
             setupScrollAnimation();
         }
 
-        // Load orders from Firebase
-        function loadOrders() {
-            database.ref('orders').on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    orders = Object.entries(data).map(([key, value]) => ({ ...value, firebaseKey: key }));
-                    
-                    // Filter orders for current user
-                    const userPhone = localStorage.getItem('customerPhone');
-                    if (userPhone) {
-                        userOrders = orders.filter(order => order.customer.phone === userPhone);
-                        renderUserOrders();
-                    }
-                } else {
-                    database.ref('orders').set([]);
-                }
+        // Show all products from all categories
+        function showAllProducts() {
+            // Update URL without reloading the page
+            window.history.pushState({}, '', window.location.pathname);
+            
+            // Hide product page if open
+            productPageView.style.display = 'none';
+            
+            // Show main shop view
+            mainShopView.style.display = 'block';
+            
+            // Show all categories
+            document.querySelectorAll('.categories-section').forEach(section => {
+                section.style.display = 'block';
             });
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+            
+            // Update active button
+            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.category-btn')[0].classList.add('active');
         }
 
-        // Setup scroll animation
-        function setupScrollAnimation() {
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                    }
-                });
-            }, { threshold: 0.1 });
-
-            document.querySelectorAll('.product-card').forEach(card => {
-                observer.observe(card);
+        // Show products from a specific category
+        function showCategoryProducts(category) {
+            // Update URL without reloading the page
+            window.history.pushState({}, '', `?category=${category}`);
+            
+            // Hide product page if open
+            productPageView.style.display = 'none';
+            
+            // Show main shop view
+            mainShopView.style.display = 'block';
+            
+            // Hide all categories except the selected one
+            document.querySelectorAll('.categories-section').forEach(section => {
+                section.style.display = 'none';
             });
+            
+            // Show the selected category
+            const categoryElement = document.getElementById(`category-${category}`);
+            if (categoryElement) {
+                categoryElement.style.display = 'block';
+                categoryElement.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                // If it's the featured category (which doesn't have its own section)
+                document.getElementById('products').style.display = 'block';
+                document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Show product page
+        function showProductPage(productId) {
+            // Update URL without reloading the page
+            window.history.pushState({}, '', `?id=${productId}`);
+            
+            // Find product in all categories
+            let product;
+            for (const category in products) {
+                const found = products[category].find(p => p.id === productId);
+                if (found) {
+                    product = found;
+                    break;
+                }
+            }
+            
+            if (!product) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            // Hide main shop view and show product page
+            mainShopView.style.display = 'none';
+            productPageView.style.display = 'block';
+            
+            // Render product gallery
+            productGallery.innerHTML = `
+                <img src="${product.images[0]}" alt="${product.name}" class="product-main-image" id="mainProductImage">
+                <div class="product-thumbnails">
+                    ${product.images.map((img, index) => `
+                        <img src="${img}" alt="${product.name} - ${index + 1}" class="product-thumbnail" 
+                             onclick="document.getElementById('mainProductImage').src = '${img}'">
+                    `).join('')}
+                </div>
+            `;
+            
+            // Render product details with working buttons
+            productDetails.innerHTML = `
+                <h1 class="product-title">${product.name}</h1>
+                <div class="product-price">
+                    <span class="current-price">${product.price} EGP</span>
+                    ${product.oldPrice ? `<span class="product-old-price">${product.oldPrice} EGP</span>` : ''}
+                    ${product.discount ? `<span class="product-discount">${product.discount}</span>` : ''}
+                </div>
+                
+                ${product.colors ? `
+                <div>
+                    <h4>Colors:</h4>
+                    <div class="color-options">
+                        ${product.colors.map(color => `
+                            <div class="color-option" style="background-color: ${getColorHex(color)}" 
+                                 title="${color}" onclick="selectColor('${color}')"></div>
+                        `).join('')}
+                    </div>
+                </div>` : ''}
+                
+                ${product.sizes ? `
+                <div>
+                    <h4>Sizes:</h4>
+                    <div class="size-options">
+                        ${product.sizes.split(', ').map(size => `
+                            <div class="size-option" onclick="selectSize('${size}')">${size}</div>
+                        `).join('')}
+                    </div>
+                </div>` : ''}
+                
+                <p class="product-description">${product.description}</p>
+                
+                <div class="product-actions">
+                    <button class="add-to-cart ${product.soldOut ? 'sold-out' : ''}" 
+                            onclick="addToCart('${product.id}')" ${product.soldOut ? 'disabled' : ''}>
+                        ${product.soldOut ? 'Sold Out' : 'Add to Cart'}
+                    </button>
+                    <button class="buy-now-btn" onclick="addToCart('${product.id}'); openCart();">
+                        Buy Now
+                    </button>
+                </div>
+            `;
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // Helper function to get color hex code
+        function getColorHex(colorName) {
+            const colors = {
+                'Red': '#ff0000',
+                'Blue': '#0000ff',
+                'White': '#ffffff',
+                'Black': '#000000',
+                'Pink': '#ffc0cb',
+                'Yellow': '#ffff00',
+                'Silver': '#c0c0c0',
+                'Gold': '#ffd700',
+                'Navy': '#000080'
+            };
+            return colors[colorName] || '#cccccc';
+        }
+
+        // Select color option
+        function selectColor(color) {
+            document.querySelectorAll('.color-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+        }
+
+        // Select size option
+        function selectSize(size) {
+            document.querySelectorAll('.size-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
         }
 
         // Setup header scroll effect
@@ -1914,6 +2073,11 @@
                     mainHeader.classList.remove('scrolled');
                 }
             });
+        }
+
+        // Scroll to products section
+        function scrollToProducts() {
+            document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
         }
 
         // Show order history
@@ -1983,6 +2147,7 @@
 
         // Update wishlist display
         function updateWishlist() {
+            // Update heart icons on product cards
             document.querySelectorAll('.wishlist-btn i').forEach(icon => {
                 const productId = icon.closest('.wishlist-btn').dataset.id;
                 icon.classList.toggle('active', wishlist.includes(productId));
@@ -2036,6 +2201,73 @@
                         });
                 }
             });
+        }
+
+        // Setup scroll animation
+        function setupScrollAnimation() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.product-card').forEach(card => {
+                observer.observe(card);
+            });
+        }
+
+        // Render Products
+        function renderProducts() {
+            // Render featured products
+            if (products.featured) {
+                featuredProducts.innerHTML = products.featured.map(product => `
+                    <div class="product-card" data-id="${product.id}">
+                        ${product.discount ? `<span class="product-badge">${product.discount}</span>` : ''}
+                        ${product.soldOut ? `<div class="sold-out-badge">Sold Out</div>` : ''}
+                        <div class="product-image-container">
+                            <img src="${product.images[0]}" alt="${product.name}" class="product-image">
+                            <button class="wishlist-btn" data-id="${product.id}" onclick="event.stopPropagation(); toggleWishlist('${product.id}')">
+                                <i class="fas fa-heart ${wishlist.includes(product.id) ? 'active' : ''}"></i>
+                            </button>
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-title">${product.name}</h3>
+                            <div class="product-price">
+                                ${product.oldPrice ? `<span class="old-price">${product.oldPrice} EGP</span>` : ''}
+                                <span class="current-price">${product.price} EGP</span>
+                            </div>
+                            <div class="product-sizes">${product.sizes || 'Sizes: S, M, L'}</div>
+                            <button class="add-to-cart ${product.soldOut ? 'sold-out' : ''}" data-id="${product.id}" ${product.soldOut ? 'disabled' : ''} onclick="event.stopPropagation(); addToCart('${product.id}')">
+                                ${product.soldOut ? 'Sold Out' : 'Add to Cart'}
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            // Render products for other categories
+            categories.slice(1).forEach(category => {
+                if (products[category]) {
+                    renderCategoryProducts(category);
+                }
+            });
+            
+            // Add click event to product cards
+            document.querySelectorAll('.product-card').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    // Don't navigate if clicking on buttons inside the card
+                    if (e.target.closest('.wishlist-btn') || e.target.closest('.add-to-cart')) {
+                        return;
+                    }
+                    const productId = this.dataset.id;
+                    showProductPage(productId);
+                });
+            });
+            
+            // Setup scroll animations for new elements
+            setupScrollAnimation();
         }
 
         // Toggle wishlist
@@ -2097,6 +2329,36 @@
                 closeOrderHistory();
                 closeOrderDetails();
                 closeCustomerForm();
+            });
+            
+            // Back to shop button - fixed to properly return to collections
+            backToShop.addEventListener('click', function(e) {
+                e.preventDefault();
+                // Remove the product ID from URL
+                if (window.history.pushState) {
+                    const url = window.location.pathname;
+                    window.history.pushState({}, '', url);
+                }
+                mainShopView.style.display = 'block';
+                productPageView.style.display = 'none';
+                // Scroll to top
+                window.scrollTo(0, 0);
+            });
+            
+            // Handle browser back/forward
+            window.addEventListener('popstate', function() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const productId = urlParams.get('id');
+                const category = urlParams.get('category');
+                
+                if (productId) {
+                    showProductPage(productId);
+                } else if (category) {
+                    showCategoryProducts(category);
+                } else {
+                    mainShopView.style.display = 'block';
+                    productPageView.style.display = 'none';
+                }
             });
             
             // Checkout
